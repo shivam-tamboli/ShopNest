@@ -259,7 +259,9 @@ const CreateCardComponent = ({ stripeCards, addressSelected, checkoutData }) => 
                             <Card
                                 style={{ border: "1px solid", borderColor: "#C6ACE7" }}
                                 className="p-2">
-                                <p><b>Card Number:</b> XXXX XXXX XXXX {cardData.card_number?.slice(12, 18) || cardData.last4}</p>
+                                <p><b>Card Number:</b> XXXX XXXX XXXX {cardData.card_number
+                                    ? cardData.card_number.slice(-4)
+                                    : cardData.last4}</p>
                                 <div>
                                     {showCardDetails(cardData)}
                                     <button onClick={() => {
