@@ -8,27 +8,18 @@ import { checkTokenValidation, logout } from '../actions/userActions'
 import { UPDATE_PRODUCT_RESET } from '../constants'
 import Message from '../components/Message'
 
-
 const ProductUpdatePage = ({ match }) => {
-
     // product details reducer
     const productDetailsReducer = useSelector(state => state.productDetailsReducer)
     const { loading: loadingPageDetails, product } = productDetailsReducer
 
-    // as our errors will be displayed at the top of the webpage
-    const scrollToTop = () => {
-        window.scrollTo({
-            top: 0,
-            behavior: "smooth"
-        });
-    }
-
-
+    // SAFE STATE INITIALIZATION
     const [name, setName] = useState("")
     const [description, setDescription] = useState("")
     const [price, setPrice] = useState("")
-    const [stock, setStock] = useState(product.stock)
+    const [stock, setStock] = useState(false)
     const [image, setImage] = useState("")
+    const [category, setCategory] = useState("") // ADD CATEGORY FIELD
 
     let history = useHistory()
     const dispatch = useDispatch()
@@ -60,6 +51,17 @@ const ProductUpdatePage = ({ match }) => {
         dispatch(getProductDetails(match.params.id))
     }, [dispatch, userInfo, history, match])
 
+    // Update form fields when product data loads - FIXED
+    useEffect(() => {
+        if (product && product.id) {
+            setName(product.name || "")
+            setDescription(product.description || "")
+            setPrice(product.price || "")
+            setStock(product.stock || false)
+            setCategory(product.category || "") // Set category from product
+        }
+    }, [product])
+
     const onSubmit = (e) => {
         e.preventDefault()
         const productId = product.id
@@ -68,6 +70,7 @@ const ProductUpdatePage = ({ match }) => {
         form_data.append('description', description)
         form_data.append('price', price)
         form_data.append('stock', stock)
+        form_data.append('category', category) // ADD CATEGORY TO FORM DATA
         form_data.append('image', image)
 
         dispatch(updateProduct(productId, form_data))
@@ -81,7 +84,6 @@ const ProductUpdatePage = ({ match }) => {
         history.push(`/product/${product.id}`)
     }
 
-
     if (userInfo && tokenError === "Request failed with status code 401") {
         alert("Session expired, please login again.")
         dispatch(logout())
@@ -89,150 +91,163 @@ const ProductUpdatePage = ({ match }) => {
         window.location.reload()
     }
 
-    return (
-        <div>
-            <span
-                className="d-flex justify-content-center text-info"
-            >
-                <em>Edit Product</em>
-            </span>
-            {productUpdationError ? (
+    // SAFE ERROR HANDLING - FIXED
+    const renderError = () => {
+        if (!productUpdationError) return "";
+        
+        // Handle different error formats safely
+        if (productUpdationError.image && Array.isArray(productUpdationError.image)) {
+            return (
                 <div>
-                    {scrollToTop()}
+                    {window.scrollTo({ top: 0, behavior: "smooth" })}
                     <Message variant='danger'>{productUpdationError.image[0]}</Message>
                 </div>
-            ) : ""}
+            );
+        } else if (typeof productUpdationError === 'string') {
+            return (
+                <div>
+                    {window.scrollTo({ top: 0, behavior: "smooth" })}
+                    <Message variant='danger'>{productUpdationError}</Message>
+                </div>
+            );
+        }
+        return "";
+    }
+
+    return (
+        <div>
+            <span className="d-flex justify-content-center text-info">
+                <em>Edit Product</em>
+            </span>
+            
+            {/* SAFE ERROR DISPLAY */}
+            {renderError()}
+            
             {loadingPageDetails && <span style={{ display: "flex" }}>
                 <h5>Getting Product Details</h5>
                 <span className="ml-2">
                     <Spinner animation="border" />
                 </span>
             </span>}
+            
             {loadingProductUpdations ? <span style={{ display: "flex" }}>
                 <h5>Updating Product</h5>
                 <span className="ml-2">
                     <Spinner animation="border" />
                 </span>
             </span> : ""}
-            <Form onSubmit={onSubmit}>
-
-                <Form.Group controlId='image'>
-                    <Form.Label>
-                        <b>
-                            Product Image
-                        </b>
-                    </Form.Label>
-                    <p>
-                        <img src={product.image} alt={product.name} height="200" />
-                    </p>
-
-                    {newImage ?
-                        <div>
-                            <Form.Control
-                                type="file"
-                                onChange={(e) => setImage(e.target.files[0])}
-                            >
-                            </Form.Control>
-
-                            <span
-                                onClick={() => {
-                                    setNewImage(!newImage)
-                                    setImage("")
-                                    dispatch({
-                                        type: UPDATE_PRODUCT_RESET
-                                    })
-                                }}
-                                className="btn btn-primary btn-sm mt-2"
-                            >
-                                Cancel
-                            </span>
-                        </div>
-                        :
+            
+            {/* SAFE RENDERING - Only show form when product data is loaded */}
+            {product && product.id && (
+                <Form onSubmit={onSubmit}>
+                    <Form.Group controlId='image'>
+                        <Form.Label>
+                            <b>Product Image</b>
+                        </Form.Label>
                         <p>
-                            <span
-                                onClick={() => setNewImage(!newImage)}
-                                className="btn btn-success btn-sm"
-                            >
-                                choose different image
-                            </span>
+                            <img src={product.image} alt={product.name} height="200" />
                         </p>
-                    }
-                </Form.Group>
 
-                <Form.Group controlId='name'>
-                    <Form.Label>
-                        <b>
-                            Product Name
-                        </b>
-                    </Form.Label>
-                    <Form.Control
-                        autoFocus={true}
-                        type="text"
-                        defaultValue={product.name}
-                        placeholder="product name"
-                        onChange={(e) => setName(e.target.value)}
+                        {newImage ? (
+                            <div>
+                                <Form.Control
+                                    type="file"
+                                    onChange={(e) => setImage(e.target.files[0])}
+                                />
+                                <span
+                                    onClick={() => {
+                                        setNewImage(!newImage)
+                                        setImage("")
+                                        dispatch({ type: UPDATE_PRODUCT_RESET })
+                                    }}
+                                    className="btn btn-primary btn-sm mt-2"
+                                >
+                                    Cancel
+                                </span>
+                            </div>
+                        ) : (
+                            <p>
+                                <span
+                                    onClick={() => setNewImage(!newImage)}
+                                    className="btn btn-success btn-sm"
+                                >
+                                    choose different image
+                                </span>
+                            </p>
+                        )}
+                    </Form.Group>
+
+                    <Form.Group controlId='name'>
+                        <Form.Label><b>Product Name</b></Form.Label>
+                        <Form.Control
+                            autoFocus={true}
+                            type="text"
+                            value={name}
+                            placeholder="product name"
+                            onChange={(e) => setName(e.target.value)}
+                        />
+                    </Form.Group>
+
+                    <Form.Group controlId='description'>
+                        <Form.Label><b>Product Description</b></Form.Label>
+                        <Form.Control
+                            type="text"
+                            value={description}
+                            placeholder="product description"
+                            onChange={(e) => setDescription(e.target.value)}
+                        />
+                    </Form.Group>
+
+                    <Form.Group controlId='price'>
+                        <Form.Label><b>Price</b></Form.Label>
+                        <Form.Control
+                            type="text"
+                            pattern="[0-9]+(\.[0-9]{1,2})?%?"
+                            value={price}
+                            placeholder="199.99"
+                            step="0.01"
+                            maxLength="8"
+                            onChange={(e) => setPrice(e.target.value)}
+                        />
+                    </Form.Group>
+
+                    {/* ADD CATEGORY FIELD */}
+                    <Form.Group controlId='category'>
+                        <Form.Label><b>Category</b></Form.Label>
+                        <Form.Control
+                            type="text"
+                            value={category}
+                            placeholder="Electronics, Clothing, Decor, etc."
+                            onChange={(e) => setCategory(e.target.value)}
+                        />
+                    </Form.Group>
+
+                    <span style={{ display: "flex", alignItems: "center" }}>
+                        <label>In Stock</label>
+                        <input
+                            type="checkbox"
+                            checked={stock}
+                            className="ml-2"
+                            onChange={() => setStock(!stock)}
+                        />
+                    </span>
+
+                    <Button
+                        type="submit"
+                        variant='success'
+                        className="btn-sm button-focus-css mb-4"
                     >
-                    </Form.Control>
-                </Form.Group>
-
-                <Form.Group controlId='description'>
-                    <Form.Label>
-                        <b>
-                            Product Description
-                        </b>
-                    </Form.Label>
-                    <Form.Control
-                        type="text"
-                        defaultValue={product.description}
-                        placeholder="product description"
-                        onChange={(e) => setDescription(e.target.value)}
+                        Save Changes
+                    </Button>
+                    <Button
+                        onClick={() => history.push(`/product/${product.id}`)}
+                        variant='primary'
+                        className="btn-sm ml-2 button-focus-css mb-4"
                     >
-                    </Form.Control>
-                </Form.Group>
-
-                <Form.Group controlId='price'>
-                    <Form.Label>
-                        <b>
-                            Price
-                        </b>
-                    </Form.Label>
-                    <Form.Control
-                        type="text"
-                        pattern="[0-9]+(\.[0-9]{1,2})?%?"
-                        defaultValue={product.price}
-                        placeholder="199.99"
-                        step="0.01"
-                        maxLength="8"
-                        onChange={(e) => setPrice(e.target.value)}
-                    >
-                    </Form.Control>
-                </Form.Group>
-
-                <span style={{ display: "flex" }}>
-                    <label>In Stock</label>
-                    <input
-                        type="checkbox"
-                        defaultChecked={product.stock}
-                        className="ml-2 mt-2"
-                        onChange={() => setStock(!stock)}
-                    />
-                </span>
-
-                <Button
-                    type="submit"
-                    variant='success'
-                    className="btn-sm button-focus-css mb-4"
-                >
-                    Save Changes
-                </Button>
-                <Button
-                    onClick={() => history.push(`/product/${product.id}`)}
-                    variant='primary'
-                    className="btn-sm ml-2 button-focus-css mb-4"
-                >
-                    Cancel
-                </Button>
-            </Form>
+                        Cancel
+                    </Button>
+                </Form>
+            )}
         </div>
     )
 }

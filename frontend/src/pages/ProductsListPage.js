@@ -11,11 +11,9 @@ function ProductsListPage() {
     const location = useLocation();
     const dispatch = useDispatch();
 
-    // Get search query from URL
     const params = new URLSearchParams(location.search);
     const searchQuery = params.get("search") || "";
 
-    // Redux state
     const productsListReducer = useSelector(state => state.productsListReducer);
     const { loading, error, products } = productsListReducer;
 
@@ -24,7 +22,6 @@ function ProductsListPage() {
         dispatch({ type: CREATE_PRODUCT_RESET });
     }, [dispatch]);
 
-    // Filter products
     const filteredProducts = products.filter((item) =>
         item.name.toLowerCase().includes(searchQuery.toLowerCase())
     );
@@ -37,7 +34,6 @@ function ProductsListPage() {
 
     return (
         <Container className="mt-4">
-            {/* Header Section */}
             <div className="d-flex justify-content-between align-items-center mb-4">
                 <h2 className="fw-bold text-primary">Our Products</h2>
             </div>
