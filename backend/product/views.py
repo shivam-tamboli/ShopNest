@@ -75,7 +75,7 @@ class ProductEditView(APIView):
             "description": data["description"] if data["description"] else product.description,
             "price": data["price"] if data["price"] else product.price,
             "stock": data["stock"],
-            "image": data["image"] if data["image"] else product.image,
+           "image": data.get("image", product.image),
             "category": data["category"] if data["category"] else product.category,
         }
 

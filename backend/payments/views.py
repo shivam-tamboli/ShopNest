@@ -52,11 +52,30 @@ class CreateCardTokenView(APIView):
     permission_classes = [permissions.IsAuthenticated]
 
     def post(self, request):
+        print("🔍 DEBUG: Headers received:", dict(request.headers))
+        print("🔍 DEBUG: Data received:", request.data)
+        
         data = request.data
-        email = data["email"]
-        cardStatus = data["save_card"]
-        payment_method_id = data["payment_method_id"]
+        email = data.get("email")
+        cardStatus = data.get("save_card")
+        payment_method_id = data.get("payment_method_id")
 
+        # Validate required fields
+        if not email:
+            print("❌ ERROR: Email is missing")
+            return Response(
+                {"detail": "Email is required."},
+                status=status.HTTP_400_BAD_REQUEST
+            )
+        if not payment_method_id:
+            print("❌ ERROR: Payment method ID is missing")
+            return Response(
+                {"detail": "Payment method ID is required."},
+                status=status.HTTP_400_BAD_REQUEST
+            )
+
+        print("✅ DEBUG: All required fields present")
+        
         # checking for valid user (email associated with card will be checked)
         customer_data = stripe.Customer.list(email=email).data
 
@@ -76,11 +95,19 @@ class CreateCardTokenView(APIView):
                 customer=customer.id,
             )
         except stripe.error.CardError as e:
+            print(f"❌ Stripe Card Error: {e.user_message}")
             return Response({"detail": e.user_message}, status=status.HTTP_400_BAD_REQUEST)
         except stripe.error.APIConnectionError:
+            print("❌ Stripe Connection Error")
             return Response(
                 {"detail": "Network error, Failed to establish a new connection."},
                 status=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            )
+        except Exception as e:
+            print(f"❌ Unexpected Stripe Error: {str(e)}")
+            return Response(
+                {"detail": f"Stripe error: {str(e)}"},
+                status=status.HTTP_400_BAD_REQUEST,
             )
 
         # Set default payment method for customer invoice payments
@@ -105,8 +132,10 @@ class CreateCardTokenView(APIView):
                     "email": email,
                     "card_data": payment_method,
                 }
+                print("✅ Card saved successfully")
                 return Response(message, status=status.HTTP_200_OK)
             except Exception as e:
+                print(f"❌ Error saving card: {str(e)}")
                 return Response(
                     {
                         "detail": f"Error saving card: {str(e)}"
@@ -120,10 +149,12 @@ class CreateCardTokenView(APIView):
                     "email": email,
                     "card_data": stripe.PaymentMethod.retrieve(payment_method_id),
                 }
+                print("✅ Card validated successfully (not saved)")
                 return Response(message, status=status.HTTP_200_OK)
-            except Exception:
+            except Exception as e:
+                print(f"❌ Network Error: {str(e)}")
                 return Response(
-                    {"detail": "Network Error, please check your internet connection."}
+                    {"detail": f"Network Error: {str(e)}"}
                 )
 
 

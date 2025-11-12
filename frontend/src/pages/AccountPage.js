@@ -86,8 +86,9 @@ function AccountPage() {
         handleClose()
     }
 
+    // FIXED: Moved state update to a proper handler
     const toggleCreateAddress = () => {
-        setCreateAddress(!createAddress)
+        setCreateAddress(prevState => !prevState)
     }
 
     return (
@@ -151,12 +152,14 @@ function AccountPage() {
                         {createAddress ? (
                             <CreateAddressComponent toggleCreateAddress={toggleCreateAddress} />
                         ) : (
-                            <button
-                                className="btn btn-sm btn-primary mb-3 button-focus-css"
-                                onClick={toggleCreateAddress}
+                            <Button
+                                variant="primary"
+                                size="sm"
+                                className="mb-3"
+                                onClick={toggleCreateAddress} // FIXED: Direct handler
                             >
                                 Add new address +
-                            </button>
+                            </Button>
                         )}
 
                         {addresses && !createAddress && addresses.map((address, idx) => (

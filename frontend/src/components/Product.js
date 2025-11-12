@@ -4,11 +4,13 @@ import React from "react";
 import "../styles/product.css";
 
 function Product({ product }) {
-    // Generate demo data (replace with actual data from backend later)
-    const rating = 4.0 + (Math.random() * 1.0); // Random rating between 4.0-5.0
+    // USE REAL DATA FROM BACKEND - FIXED
     const isInStock = product.stock !== undefined ? product.stock : true;
-    const isPopular = Math.random() > 0.7; // 30% chance to be popular
-    const isNew = Math.random() > 0.8; // 20% chance to be new
+    const isNew = product.is_new || false;  // FIXED: Use actual backend data
+    const isPopular = product.is_popular || false; // FIXED: Use actual backend data
+    
+    // Generate consistent rating based on product ID
+    const rating = 4.0 + ((product.id % 10) / 10);
 
     // Function to render star ratings
     const renderStars = (rating) => {
@@ -37,6 +39,9 @@ function Product({ product }) {
                         src={product.image || "/images/placeholder.png"}
                         alt={product.name}
                         className="product-image"
+                        onError={(e) => {
+                            e.target.src = "/images/placeholder.png";
+                        }}
                     />
                 </Link>
                 
@@ -67,7 +72,7 @@ function Product({ product }) {
                         {new Intl.NumberFormat("en-IN", {
                             style: "currency",
                             currency: "INR",
-                        }).format(product.price)}
+                        }).format(product.price || 0)}
                     </span>
                 </Card.Text>
 

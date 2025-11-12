@@ -24,10 +24,9 @@ import {
 import axios from 'axios'
 
 // create card
+// create card
 export const createCard = (cardData) => async (dispatch, getState) => {
-
     try {
-
         dispatch({
             type: CARD_CREATE_REQUEST
         })
@@ -40,7 +39,7 @@ export const createCard = (cardData) => async (dispatch, getState) => {
             headers: {
                 "Content-Type": "application/json",
                 Authorization: `Bearer ${userInfo.token}`,
-                "Card-Number": cardData.cardNumber,
+                // REMOVE THIS LINE: "Card-Number": cardData.cardNumber,
             }
         }
 
@@ -67,7 +66,6 @@ export const createCard = (cardData) => async (dispatch, getState) => {
         })
     }
 }
-
 
 // charge customer
 export const chargeCustomer = (cardData) => async (dispatch, getState) => {
