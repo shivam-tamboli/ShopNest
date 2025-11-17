@@ -48,14 +48,21 @@
   font-weight: 600;
   padding: 0.3rem 0.6rem;
   border-radius: 0.5rem;
+  color: white;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
 }
 
 .new-badge {
   background: linear-gradient(135deg, #28a745, #20c997) !important;
 }
 
-.popular-badge {
+.hot-badge {
   background: linear-gradient(135deg, #dc3545, #e83e8c) !important;
+}
+
+.popular-badge {
+  background: linear-gradient(135deg, #ffc107, #fd7e14) !important;
 }
 
 .stock-badge {

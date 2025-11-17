@@ -39,6 +39,12 @@ class ProductCreateView(APIView):
             "stock": data["stock"],
             "image": data["image"],
             "category": data["category"],
+            # ADD BADGE FIELDS
+            "is_new": data.get("is_new", False),
+            "is_popular": data.get("is_popular", False),
+            # ADD RATING FIELDS (with defaults)
+            "average_rating": data.get("average_rating", 0.0),
+            "rating_count": data.get("rating_count", 0),
         }
 
         serializer = ProductSerializer(data=product, many=False)
@@ -71,12 +77,18 @@ class ProductEditView(APIView):
         product = Product.objects.get(id=pk)
         
         updated_product = {
-            "name": data["name"] if data["name"] else product.name,
-            "description": data["description"] if data["description"] else product.description,
-            "price": data["price"] if data["price"] else product.price,
-            "stock": data["stock"],
-           "image": data.get("image", product.image),
-            "category": data["category"] if data["category"] else product.category,
+            "name": data.get("name", product.name),
+            "description": data.get("description", product.description),
+            "price": data.get("price", product.price),
+            "stock": data.get("stock", product.stock),
+            "image": data.get("image", product.image),
+            "category": data.get("category", product.category),
+            # ADD BADGE FIELDS - FIXED
+            "is_new": data.get("is_new", product.is_new),
+            "is_popular": data.get("is_popular", product.is_popular),
+            # ADD RATING FIELDS - FIXED
+            "average_rating": data.get("average_rating", product.average_rating),
+            "rating_count": data.get("rating_count", product.rating_count),
         }
 
         serializer = ProductSerializer(product, data=updated_product)

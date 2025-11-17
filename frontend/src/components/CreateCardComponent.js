@@ -10,6 +10,7 @@ import DeleteCardComponent from './DeleteCardComponent';
 import { useStripe, useElements } from '@stripe/react-stripe-js';
 import StripeCardElement from './StripeCardElement';
 
+
 const CreateCardComponent = ({ stripeCards, addressSelected, checkoutData }) => {
     let history = useHistory()
     const dispatch = useDispatch()

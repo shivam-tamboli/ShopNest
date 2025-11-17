@@ -1,7 +1,13 @@
 import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { deleteProduct, getProductDetails } from "../actions/productActions";
-import { addToCart } from "../actions/cartActions";
+import { 
+    deleteProduct, 
+    getProductDetails 
+} from "../actions/productActions";
+import { 
+    addToCart, 
+    getCart  // ADD THIS IMPORT
+} from "../actions/cartActions";
 import Message from "../components/Message";
 import {
     Spinner,
@@ -73,20 +79,31 @@ function ProductDetailsPage({ history, match }) {
     };
 
     // add to cart handler
-    const handleAddToCart = () => {
-        if (!userInfo) {
-            history.push('/login');
-        } else {
-            dispatch(addToCart(product.id))
-                .then(() => {
-                    // Show success message after adding to cart
-                    setShowCartSuccess(true);
-                })
-                .catch((error) => {
-                    console.error("Error adding to cart:", error);
-                });
-        }
-    };
+    // add to cart handler - FIXED VERSION
+const handleAddToCart = async () => {
+    if (!userInfo) {
+        history.push('/login');
+        return;
+    }
+
+    try {
+        // Show loading state immediately
+        setShowCartSuccess(false);
+        
+        // Wait for the addToCart action to complete
+        await dispatch(addToCart(product.id));
+        
+        // Show success message
+        setShowCartSuccess(true);
+        
+        // Optional: Refresh cart data
+        dispatch(getCart());
+        
+    } catch (error) {
+        console.error("Error adding to cart:", error);
+        alert(`Failed to add to cart: ${error.message}`);
+    }
+};
 
     // after deletion
     useEffect(() => {
@@ -174,6 +191,20 @@ function ProductDetailsPage({ history, match }) {
                         {/* Product Details */}
                         <Col md={4} className="mb-3">
                             <h3 className="fw-bold">{product.name}</h3>
+                            
+                            {/* ADDED BADGES SECTION */}
+                            <div className="product-badges mb-2">
+                                {product.is_new && (
+                                    <span className="badge bg-success me-1">New</span>
+                                )}
+                                {product.is_hot && (
+                                    <span className="badge bg-danger me-1">Hot</span>
+                                )}
+                                {product.is_popular && (
+                                    <span className="badge bg-warning text-dark me-1">Popular</span>
+                                )}
+                            </div>
+                            
                             <hr />
                             <p className="text-muted">{product.description}</p>
                             <div
@@ -192,7 +223,7 @@ function ProductDetailsPage({ history, match }) {
                         <Col md={3} className="text-center">
                             <h4 className="fw-bold">Buy</h4>
                             <hr />
-                            {product.stock ? (
+                            {product.stock === true || product.stock === 'true' ? (
                                 <>
                                     <Button
                                         variant="primary"

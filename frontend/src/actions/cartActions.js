@@ -48,6 +48,7 @@ export const getCart = () => async (dispatch, getState) => {
 }
 
 // add to cart
+// add to cart - improved version
 export const addToCart = (product_id, quantity = 1) => async (dispatch, getState) => {
     try {
         dispatch({
@@ -57,6 +58,16 @@ export const addToCart = (product_id, quantity = 1) => async (dispatch, getState
         const {
             userLoginReducer: { userInfo },
         } = getState()
+
+        // Check if user is logged in
+        if (!userInfo || !userInfo.token) {
+            const error = "Please login to add items to cart"
+            dispatch({
+                type: CART_ADD_FAIL,
+                payload: error
+            })
+            throw new Error(error)
+        }
 
         const config = {
             headers: {
@@ -71,11 +82,25 @@ export const addToCart = (product_id, quantity = 1) => async (dispatch, getState
             type: CART_ADD_SUCCESS,
             payload: data
         })
+
+        // Dispatch getCart to refresh the cart state
+        dispatch(getCart())
+
+        return data
+
     } catch (error) {
+        const errorMessage = error.response && error.response.data.detail 
+            ? error.response.data.detail 
+            : error.message
+        
+        console.error("Add to cart error:", errorMessage)
+        
         dispatch({
             type: CART_ADD_FAIL,
-            payload: error.response && error.response.data.detail ? error.response.data.detail : error.message
+            payload: errorMessage
         })
+        
+        throw error
     }
 }
 

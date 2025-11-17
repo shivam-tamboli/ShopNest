@@ -1,110 +1,144 @@
-import { Card, Badge, Button } from "react-bootstrap";
-import { Link } from "react-router-dom";
-import React from "react";
-import "../styles/product.css";
+import React, { useState } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
+import { addToCart } from '../actions/cartActions';
+import { Card, Button, Badge, Spinner } from 'react-bootstrap';
+import { Link } from 'react-router-dom';
+import Message from './Message';
 
-function Product({ product }) {
-    // USE REAL DATA FROM BACKEND - FIXED
-    const isInStock = product.stock !== undefined ? product.stock : true;
-    const isNew = product.is_new || false;  // FIXED: Use actual backend data
-    const isPopular = product.is_popular || false; // FIXED: Use actual backend data
-    
-    // Generate consistent rating based on product ID
-    const rating = 4.0 + ((product.id % 10) / 10);
+const Product = ({ product }) => {
+    const dispatch = useDispatch();
+    const [loading, setLoading] = useState(false);
+    const [error, setError] = useState('');
 
-    // Function to render star ratings
-    const renderStars = (rating) => {
-        const stars = [];
-        const fullStars = Math.floor(rating);
-        const hasHalfStar = rating % 1 >= 0.5;
+    // FIX: Access the correct state structure
+    const { userInfo } = useSelector(state => state.userLoginReducer);
+    const { loading: cartLoading, error: cartError } = useSelector(state => state.cartReducer);
 
-        for (let i = 0; i < fullStars; i++) {
-            stars.push('⭐');
+    const handleAddToCart = async () => {
+        if (!userInfo) {
+            setError('Please login to add items to cart');
+            return;
         }
-        if (hasHalfStar && stars.length < 5) {
-            stars.push('⭐');
+
+        setLoading(true);
+        setError('');
+
+        try {
+            await dispatch(addToCart(product.id, 1));
+            // Success - you can add a toast notification here
+            console.log('Product added to cart successfully');
+        } catch (error) {
+            console.error('Add to cart error:', error);
+            setError('Failed to add product to cart');
+        } finally {
+            setLoading(false);
         }
-        while (stars.length < 5) {
-            stars.push('☆');
-        }
-        return stars.join('');
+    };
+
+    const formatPrice = (price) => {
+        return new Intl.NumberFormat('en-US', {
+            style: 'currency',
+            currency: 'USD'
+        }).format(price);
     };
 
     return (
-        <Card className="product-card-enhanced">
-            <div className="product-image-container position-relative">
-                <Link to={`/product/${product.id}`}>
-                    <Card.Img
-                        variant="top"
-                        src={product.image || "/images/placeholder.png"}
-                        alt={product.name}
-                        className="product-image"
-                        onError={(e) => {
-                            e.target.src = "/images/placeholder.png";
-                        }}
-                    />
-                </Link>
-                
-                {/* Product Badges */}
+        <Card className="product-card-enhanced h-100">
+            {/* Product Image */}
+            <div className="product-image-container">
+                <Card.Img 
+                    variant="top" 
+                    src={product.image} 
+                    className="product-image"
+                    alt={product.name}
+                />
                 <div className="product-badges">
-                    {isNew && <Badge bg="success" className="product-badge new-badge">New</Badge>}
-                    {isPopular && <Badge bg="danger" className="product-badge popular-badge">Popular</Badge>}
-                    {!isInStock && <Badge bg="secondary" className="product-badge stock-badge">Out of Stock</Badge>}
+                    {product.is_new && (
+                        <span className="product-badge new-badge">New</span>
+                    )}
+                    {product.is_hot && (  // ADD THIS
+                        <span className="product-badge hot-badge">Hot</span>
+                    )}
+                    {product.is_popular && (  // ADD THIS
+                        <span className="product-badge popular-badge">Popular</span>
+                    )}
                 </div>
             </div>
 
-            <Card.Body className="product-card-body">
-                <Link to={`/product/${product.id}`} className="text-decoration-none">
-                    <Card.Title as="div" className="product-title">
-                        <strong>{product.name}</strong>
-                    </Card.Title>
-                </Link>
+            <Card.Body className="product-card-body d-flex flex-column">
+                {/* Product Title */}
+                <Card.Title className="product-title">
+                    <Link to={`/product/${product.id}`} className="text-decoration-none text-dark">
+                        {product.name}
+                    </Link>
+                </Card.Title>
 
                 {/* Product Rating */}
                 <div className="product-rating">
-                    <span className="stars">{renderStars(rating)}</span>
-                    <span className="rating-text">({rating.toFixed(1)})</span>
+                    <span className="stars">⭐⭐⭐⭐</span>
+                    <span className="rating-text">(No ratings)</span>
                 </div>
 
                 {/* Product Price */}
-                <Card.Text as="div" className="product-price-container">
+                <div className="product-price-container">
                     <span className="product-price">
-                        {new Intl.NumberFormat("en-IN", {
-                            style: "currency",
-                            currency: "INR",
-                        }).format(product.price || 0)}
+                        {formatPrice(product.price)}
                     </span>
-                </Card.Text>
+                </div>
 
                 {/* Stock Status */}
                 <div className="stock-status">
-                    {isInStock ? (
-                        <Badge bg="success" className="stock-status-badge in-stock">
-                            ✓ In Stock
-                        </Badge>
-                    ) : (
-                        <Badge bg="secondary" className="stock-status-badge out-of-stock">
-                            ✗ Out of Stock
-                        </Badge>
-                    )}
+                    <Badge 
+                        className={`stock-status-badge ${product.in_stock ? 'in-stock' : 'out-of-stock'}`}
+                    >
+                        {product.in_stock ? 'In Stock' : 'Out of Stock'}
+                    </Badge>
                 </div>
 
-                {/* Action Buttons */}
-                <div className="product-actions">
-                    <Link to={`/product/${product.id}`} className="btn btn-outline-primary btn-view-details">
+                {/* Error Message */}
+                {error && (
+                    <Message variant="danger" className="mt-2">
+                        {error}
+                    </Message>
+                )}
+
+                {/* Product Actions */}
+                <div className="product-actions mt-auto">
+                    <Button 
+                        variant="outline-primary" 
+                        className="btn-view-details w-100 mb-2"
+                        as={Link}
+                        to={`/product/${product.id}`}
+                    >
                         View Details
-                    </Link>
+                    </Button>
+                    
                     <Button 
                         variant="primary" 
-                        className="btn-add-to-cart"
-                        disabled={!isInStock}
+                        className="btn-add-to-cart w-100"
+                        onClick={handleAddToCart}
+                        disabled={!product.in_stock || loading || cartLoading}
                     >
-                        {isInStock ? 'Add to Cart' : 'Out of Stock'}
+                        {loading || cartLoading ? (
+                            <>
+                                <Spinner
+                                    as="span"
+                                    animation="border"
+                                    size="sm"
+                                    role="status"
+                                    aria-hidden="true"
+                                    className="me-2"
+                                />
+                                Adding...
+                            </>
+                        ) : (
+                            product.in_stock ? 'Add to Cart' : 'Out of Stock'
+                        )}
                     </Button>
                 </div>
             </Card.Body>
         </Card>
     );
-}
+};
 
 export default Product;
