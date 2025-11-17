@@ -6,7 +6,7 @@ import {
 } from "../actions/productActions";
 import { 
     addToCart, 
-    getCart  // ADD THIS IMPORT
+    getCart
 } from "../actions/cartActions";
 import Message from "../components/Message";
 import {
@@ -79,31 +79,22 @@ function ProductDetailsPage({ history, match }) {
     };
 
     // add to cart handler
-    // add to cart handler - FIXED VERSION
-const handleAddToCart = async () => {
-    if (!userInfo) {
-        history.push('/login');
-        return;
-    }
+    const handleAddToCart = async () => {
+        if (!userInfo) {
+            history.push('/login');
+            return;
+        }
 
-    try {
-        // Show loading state immediately
-        setShowCartSuccess(false);
-        
-        // Wait for the addToCart action to complete
-        await dispatch(addToCart(product.id));
-        
-        // Show success message
-        setShowCartSuccess(true);
-        
-        // Optional: Refresh cart data
-        dispatch(getCart());
-        
-    } catch (error) {
-        console.error("Error adding to cart:", error);
-        alert(`Failed to add to cart: ${error.message}`);
-    }
-};
+        try {
+            setShowCartSuccess(false);
+            await dispatch(addToCart(product.id));
+            setShowCartSuccess(true);
+            dispatch(getCart());
+        } catch (error) {
+            console.error("Error adding to cart:", error);
+            alert(`Failed to add to cart: ${error.message}`);
+        }
+    };
 
     // after deletion
     useEffect(() => {
@@ -154,7 +145,7 @@ const handleAddToCart = async () => {
             {product && (
                 <Container className="my-4">
                     <Row className="shadow-lg p-3 rounded bg-white">
-                        {/* Product Image */}
+                        {/* Product Image - REMOVED BADGES */}
                         <Col md={5} className="mb-3">
                             <Card className="shadow-sm border-0">
                                 <Card.Img
@@ -192,18 +183,7 @@ const handleAddToCart = async () => {
                         <Col md={4} className="mb-3">
                             <h3 className="fw-bold">{product.name}</h3>
                             
-                            {/* ADDED BADGES SECTION */}
-                            <div className="product-badges mb-2">
-                                {product.is_new && (
-                                    <span className="badge bg-success me-1">New</span>
-                                )}
-                                {product.is_hot && (
-                                    <span className="badge bg-danger me-1">Hot</span>
-                                )}
-                                {product.is_popular && (
-                                    <span className="badge bg-warning text-dark me-1">Popular</span>
-                                )}
-                            </div>
+                            {/* REMOVED BADGES SECTION FROM DETAILS PAGE */}
                             
                             <hr />
                             <p className="text-muted">{product.description}</p>

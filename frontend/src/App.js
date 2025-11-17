@@ -26,11 +26,9 @@ import CartPage from './pages/CartPage'
 import CartCheckoutPage from './pages/CartCheckoutPage';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import './styles/custom.css';
-
-
+import './styles/product.css'; // ADD THIS LINE
 
 const App = () => {
-
   return (
     <div>
       <Router>
@@ -60,9 +58,7 @@ const App = () => {
             <Route path="/checkout" component={CheckoutPage} exact />
             <Route path="/cartcheckout" component={CartCheckoutPage} exact />
             <Route path="/checkout/product/:id" component={CheckoutPage} exact />
-
             <Route path="" component={NotFound} exact />
-
           </Switch>
         </div>
       </Router>
