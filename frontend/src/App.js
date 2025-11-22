@@ -24,9 +24,11 @@ import ClothingPage from './pages/ClothingPage';
 import DecorPage from './pages/DecorPage';
 import CartPage from './pages/CartPage'
 import CartCheckoutPage from './pages/CartCheckoutPage';
+import Wishlist from './components/Wishlist'; // ADD THIS IMPORT
 import 'bootstrap/dist/css/bootstrap.min.css';
 import './styles/custom.css';
-import './styles/product.css'; // ADD THIS LINE
+import './styles/product.css';
+import './styles/wishlist.css'; // ADD THIS LINE
 
 const App = () => {
   return (
@@ -58,6 +60,7 @@ const App = () => {
             <Route path="/checkout" component={CheckoutPage} exact />
             <Route path="/cartcheckout" component={CartCheckoutPage} exact />
             <Route path="/checkout/product/:id" component={CheckoutPage} exact />
+            <Route path="/wishlist" component={Wishlist} exact /> {/* ADD THIS ROUTE */}
             <Route path="" component={NotFound} exact />
           </Switch>
         </div>

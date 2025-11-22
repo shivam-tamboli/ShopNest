@@ -1,0 +1,141 @@
+.wishlist-container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 20px;
+    min-height: 70vh;
+  }
+  
+  .wishlist-header {
+    text-align: center;
+    margin-bottom: 30px;
+    padding-bottom: 20px;
+    border-bottom: 1px solid #eee;
+  }
+  
+  .wishlist-header h1 {
+    color: #333;
+    font-size: 2.5rem;
+    margin-bottom: 10px;
+  }
+  
+  .wishlist-count {
+    color: #666;
+    font-size: 1.1rem;
+  }
+  
+  .wishlist-products {
+    margin-top: 20px;
+  }
+  
+  .products-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 25px;
+    padding: 20px 0;
+  }
+  
+  .wishlist-loading,
+  .wishlist-error,
+  .wishlist-empty,
+  .wishlist-login-prompt {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 60px 20px;
+    text-align: center;
+  }
+  
+  .loading-spinner {
+    width: 40px;
+    height: 40px;
+    border: 4px solid #f3f3f3;
+    border-top: 4px solid #007bff;
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+    margin-bottom: 20px;
+  }
+  
+  @keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+  }
+  
+  .wishlist-error p {
+    color: #dc3545;
+    font-size: 1.1rem;
+  }
+  
+  .empty-state,
+  .wishlist-login-prompt {
+    max-width: 400px;
+    margin: 0 auto;
+  }
+  
+  .empty-heart {
+    font-size: 4rem;
+    margin-bottom: 20px;
+    opacity: 0.7;
+  }
+  
+  .empty-state h2,
+  .wishlist-login-prompt h2 {
+    color: #333;
+    margin-bottom: 10px;
+  }
+  
+  .empty-state p,
+  .wishlist-login-prompt p {
+    color: #666;
+    margin-bottom: 25px;
+    font-size: 1.1rem;
+  }
+  
+  .browse-products-btn {
+    display: inline-block;
+    padding: 12px 30px;
+    background-color: #007bff;
+    color: white;
+    text-decoration: none;
+    border-radius: 5px;
+    font-weight: 500;
+    transition: background-color 0.3s ease;
+  }
+  
+  .browse-products-btn:hover {
+    background-color: #0056b3;
+    color: white;
+    text-decoration: none;
+  }
+  
+  /* Responsive Design */
+  @media (max-width: 768px) {
+    .wishlist-container {
+      padding: 15px;
+    }
+  
+    .wishlist-header h1 {
+      font-size: 2rem;
+    }
+  
+    .products-grid {
+      grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+      gap: 20px;
+      padding: 15px 0;
+    }
+  
+    .empty-heart {
+      font-size: 3rem;
+    }
+  }
+  
+  @media (max-width: 480px) {
+    .products-grid {
+      grid-template-columns: 1fr;
+      gap: 15px;
+    }
+  
+    .wishlist-header h1 {
+      font-size: 1.8rem;
+    }
+  }

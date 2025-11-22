@@ -3,6 +3,7 @@ import { Link } from "react-router-dom";
 import React from "react";
 import { useDispatch, useSelector } from 'react-redux';
 import { addToCart } from '../actions/cartActions';
+import { toggleWishlist } from '../actions/wishlistActions';
 import "../styles/product.css";
 
 function Product({ product }) {
@@ -12,6 +13,7 @@ function Product({ product }) {
     const isInStock = product.stock !== undefined ? product.stock : true;
     const isNew = product.is_new || false;
     const isPopular = product.is_popular || false;
+    const isWishlisted = product.is_wishlisted || false;
     
     const rating = 4.0 + ((product.id % 10) / 10);
 
@@ -21,6 +23,14 @@ function Product({ product }) {
             return;
         }
         dispatch(addToCart(product.id, 1));
+    };
+
+    const handleWishlistToggle = () => {
+        if (!userInfo) {
+            alert('Please login to add to wishlist');
+            return;
+        }
+        dispatch(toggleWishlist(product.id));
     };
 
     const renderStars = (rating) => {
@@ -60,6 +70,14 @@ function Product({ product }) {
                     {isPopular && <Badge bg="danger" className="product-badge popular-badge">Popular</Badge>}
                     {!isInStock && <Badge bg="secondary" className="product-badge stock-badge">Out of Stock</Badge>}
                 </div>
+
+                <Button 
+                    variant={isWishlisted ? "danger" : "outline-danger"}
+                    className="wishlist-heart"
+                    onClick={handleWishlistToggle}
+                >
+                    {isWishlisted ? '❤️' : '🤍'}
+                </Button>
             </div>
 
             <Card.Body className="product-card-body">

@@ -16,8 +16,8 @@ import {
     updateStripeCardtReducer
 } from "./cardReducers";
 
-
 import { cartReducer } from './cartReducers'
+import { wishlistReducer } from './wishlistReducers'
 
 import {
     userLoginReducer,
@@ -59,7 +59,7 @@ const reducer = combineReducers({
     userDetailsUpdateReducer,
     deleteUserAccountReducer,
     cartReducer,
+    wishlistReducer,
 })
-
 
 export default reducer

@@ -51,11 +51,18 @@ function NavBar() {
                             </LinkContainer>
 
                             {userInfo && (
-                                <LinkContainer to="/cart">
-                                    <Nav.Link className="nav-link-custom">
-                                        <i className="fas fa-shopping-cart me-1"></i> Cart
-                                    </Nav.Link>
-                                </LinkContainer>
+                                <>
+                                    <LinkContainer to="/cart">
+                                        <Nav.Link className="nav-link-custom">
+                                            <i className="fas fa-shopping-cart me-1"></i> Cart
+                                        </Nav.Link>
+                                    </LinkContainer>
+                                    <LinkContainer to="/wishlist">
+                                        <Nav.Link className="nav-link-custom">
+                                            <i className="fas fa-heart me-1"></i> Wishlist
+                                        </Nav.Link>
+                                    </LinkContainer>
+                                </>
                             )}
 
                             {userInfo && userInfo.admin && (
