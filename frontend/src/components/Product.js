@@ -1,19 +1,28 @@
-
 import { Card, Badge, Button } from "react-bootstrap";
 import { Link } from "react-router-dom";
 import React from "react";
+import { useDispatch, useSelector } from 'react-redux';
+import { addToCart } from '../actions/cartActions';
 import "../styles/product.css";
 
 function Product({ product }) {
-    // USE REAL DATA FROM BACKEND - FIXED
+    const dispatch = useDispatch();
+    const { userInfo } = useSelector(state => state.userLoginReducer);
+
     const isInStock = product.stock !== undefined ? product.stock : true;
-    const isNew = product.is_new || false;  // FIXED: Use actual backend data
-    const isPopular = product.is_popular || false; // FIXED: Use actual backend data
+    const isNew = product.is_new || false;
+    const isPopular = product.is_popular || false;
     
-    // Generate consistent rating based on product ID
     const rating = 4.0 + ((product.id % 10) / 10);
 
-    // Function to render star ratings
+    const handleAddToCart = () => {
+        if (!userInfo) {
+            alert('Please login to add items to cart');
+            return;
+        }
+        dispatch(addToCart(product.id, 1));
+    };
+
     const renderStars = (rating) => {
         const stars = [];
         const fullStars = Math.floor(rating);
@@ -46,7 +55,6 @@ function Product({ product }) {
                     />
                 </Link>
                 
-                {/* Product Badges */}
                 <div className="product-badges">
                     {isNew && <Badge bg="success" className="product-badge new-badge">New</Badge>}
                     {isPopular && <Badge bg="danger" className="product-badge popular-badge">Popular</Badge>}
@@ -61,13 +69,11 @@ function Product({ product }) {
                     </Card.Title>
                 </Link>
 
-                {/* Product Rating */}
                 <div className="product-rating">
                     <span className="stars">{renderStars(rating)}</span>
                     <span className="rating-text">({rating.toFixed(1)})</span>
                 </div>
 
-                {/* Product Price */}
                 <Card.Text as="div" className="product-price-container">
                     <span className="product-price">
                         {new Intl.NumberFormat("en-IN", {
@@ -77,7 +83,6 @@ function Product({ product }) {
                     </span>
                 </Card.Text>
 
-                {/* Stock Status */}
                 <div className="stock-status">
                     {isInStock ? (
                         <Badge bg="success" className="stock-status-badge in-stock">
@@ -90,7 +95,6 @@ function Product({ product }) {
                     )}
                 </div>
 
-                {/* Action Buttons */}
                 <div className="product-actions">
                     <Link to={`/product/${product.id}`} className="btn btn-outline-primary btn-view-details">
                         View Details
@@ -99,6 +103,7 @@ function Product({ product }) {
                         variant="primary" 
                         className="btn-add-to-cart"
                         disabled={!isInStock}
+                        onClick={handleAddToCart}
                     >
                         {isInStock ? 'Add to Cart' : 'Out of Stock'}
                     </Button>
