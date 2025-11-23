@@ -21,45 +21,47 @@ function NavBar() {
     };
 
     return (
-        <header>
-            <Navbar expand="lg" className="custom-navbar shadow-sm">
+        <header className="modern-header">
+            <Navbar expand="lg" className="modern-navbar">
                 <Container>
                     <LinkContainer to="/">
-                        <Navbar.Brand className="brand-logo">
-                            <i className="fas fa-shopping-bag me-2"></i> ShopNest
+                        <Navbar.Brand className="modern-brand">
+                            <div className="brand-icon">🛍️</div>
+                            <span className="brand-text">ShopNest</span>
                         </Navbar.Brand>
                     </LinkContainer>
 
-                    <Navbar.Toggle aria-controls="basic-navbar-nav" />
+                    <Navbar.Toggle aria-controls="basic-navbar-nav" className="nav-toggle" />
                     <Navbar.Collapse id="basic-navbar-nav">
-                        <Nav className="me-auto align-items-center">
-
+                        <Nav className="me-auto nav-links">
                             <LinkContainer to="/about">
-                                <Nav.Link className="nav-link-custom">About</Nav.Link>
+                                <Nav.Link className="nav-link">About</Nav.Link>
                             </LinkContainer>
-                            <LinkContainer to="/">
-                                <Nav.Link className="nav-link-custom">All Products</Nav.Link>
+                            <LinkContainer to="/products">
+                                <Nav.Link className="nav-link">Products</Nav.Link>
                             </LinkContainer>
                             <LinkContainer to="/electronics">
-                                <Nav.Link className="nav-link-custom">Electronics</Nav.Link>
+                                <Nav.Link className="nav-link">Electronics</Nav.Link>
                             </LinkContainer>
                             <LinkContainer to="/clothing">
-                                <Nav.Link className="nav-link-custom">Clothing</Nav.Link>
+                                <Nav.Link className="nav-link">Clothing</Nav.Link>
                             </LinkContainer>
                             <LinkContainer to="/decor">
-                                <Nav.Link className="nav-link-custom">Decor</Nav.Link>
+                                <Nav.Link className="nav-link">Decor</Nav.Link>
                             </LinkContainer>
 
                             {userInfo && (
                                 <>
                                     <LinkContainer to="/cart">
-                                        <Nav.Link className="nav-link-custom">
-                                            <i className="fas fa-shopping-cart me-1"></i> Cart
+                                        <Nav.Link className="nav-link cart-link">
+                                            <span className="nav-icon">🛒</span>
+                                            Cart
                                         </Nav.Link>
                                     </LinkContainer>
                                     <LinkContainer to="/wishlist">
-                                        <Nav.Link className="nav-link-custom">
-                                            <i className="fas fa-heart me-1"></i> Wishlist
+                                        <Nav.Link className="nav-link wishlist-link">
+                                            <span className="nav-icon">❤️</span>
+                                            Wishlist
                                         </Nav.Link>
                                     </LinkContainer>
                                 </>
@@ -67,46 +69,61 @@ function NavBar() {
 
                             {userInfo && userInfo.admin && (
                                 <LinkContainer to="/new-product/">
-                                    <Nav.Link className="nav-link-custom">Add Product</Nav.Link>
+                                    <Nav.Link className="nav-link">Add Product</Nav.Link>
                                 </LinkContainer>
                             )}
-
-                            <div className="search-container">
-                                <SearchBarForProducts />
-                            </div>
                         </Nav>
 
+                        <div className="nav-search">
+                            <SearchBarForProducts />
+                        </div>
+
                         {userInfo ? (
-                            <NavDropdown
-                                className="text-capitalize nav-dropdown"
-                                title={
-                                    <span>
-                                        <i className="fas fa-user-circle me-2"></i>
-                                        {userInfo.username}
-                                    </span>
-                                }
-                                id="username"
-                            >
-                                <LinkContainer to="/account">
-                                    <NavDropdown.Item>Account Settings</NavDropdown.Item>
-                                </LinkContainer>
-                                <LinkContainer to="/stripe-card-details/">
-                                    <NavDropdown.Item>Card Settings</NavDropdown.Item>
-                                </LinkContainer>
-                                <LinkContainer to="/all-orders/">
-                                    <NavDropdown.Item>All Orders</NavDropdown.Item>
-                                </LinkContainer>
-                                <NavDropdown.Item
-                                    onClick={logoutHandler}
-                                    className="logout-btn"
+                            <div className="user-section">
+                                <NavDropdown
+                                    className="user-dropdown"
+                                    title={
+                                        <div className="user-avatar">
+                                            <span className="avatar-icon">👤</span>
+                                            <span className="username">{userInfo.username}</span>
+                                            <span className="dropdown-arrow">⌄</span>
+                                        </div>
+                                    }
+                                    id="username"
                                 >
-                                    Logout
-                                </NavDropdown.Item>
-                            </NavDropdown>
+                                    <LinkContainer to="/account">
+                                        <NavDropdown.Item className="dropdown-item">
+                                            <span className="item-icon">⚙️</span>
+                                            Account Settings
+                                        </NavDropdown.Item>
+                                    </LinkContainer>
+                                    <LinkContainer to="/stripe-card-details/">
+                                        <NavDropdown.Item className="dropdown-item">
+                                            <span className="item-icon">💳</span>
+                                            Card Settings
+                                        </NavDropdown.Item>
+                                    </LinkContainer>
+                                    <LinkContainer to="/all-orders/">
+                                        <NavDropdown.Item className="dropdown-item">
+                                            <span className="item-icon">📦</span>
+                                            All Orders
+                                        </NavDropdown.Item>
+                                    </LinkContainer>
+                                    <NavDropdown.Divider />
+                                    <NavDropdown.Item 
+                                        onClick={logoutHandler}
+                                        className="dropdown-item logout-item"
+                                    >
+                                        <span className="item-icon">🚪</span>
+                                        Logout
+                                    </NavDropdown.Item>
+                                </NavDropdown>
+                            </div>
                         ) : (
                             <LinkContainer to="/login">
-                                <Nav.Link className="nav-link-custom login-btn">
-                                    <i className="fas fa-sign-in-alt me-1"></i> Login
+                                <Nav.Link className="login-btn">
+                                    <span className="login-icon">🔐</span>
+                                    Login
                                 </Nav.Link>
                             </LinkContainer>
                         )}

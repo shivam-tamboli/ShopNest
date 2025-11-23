@@ -51,11 +51,10 @@ function Product({ product }) {
     };
 
     return (
-        <Card className="product-card-enhanced">
-            <div className="product-image-container position-relative">
+        <div className="modern-product-card">
+            <div className="product-image-section">
                 <Link to={`/product/${product.id}`}>
-                    <Card.Img
-                        variant="top"
+                    <img
                         src={product.image || "/images/placeholder.png"}
                         alt={product.name}
                         className="product-image"
@@ -66,25 +65,22 @@ function Product({ product }) {
                 </Link>
                 
                 <div className="product-badges">
-                    {isNew && <Badge bg="success" className="product-badge new-badge">New</Badge>}
-                    {isPopular && <Badge bg="danger" className="product-badge popular-badge">Popular</Badge>}
-                    {!isInStock && <Badge bg="secondary" className="product-badge stock-badge">Out of Stock</Badge>}
+                    {isNew && <span className="badge new-badge">New</span>}
+                    {isPopular && <span className="badge popular-badge">Trending</span>}
+                    {!isInStock && <span className="badge stock-badge">Out of Stock</span>}
                 </div>
 
-                <Button 
-                    variant={isWishlisted ? "danger" : "outline-danger"}
-                    className="wishlist-heart"
+                <button 
+                    className={`wishlist-heart ${isWishlisted ? 'wishlisted' : ''}`}
                     onClick={handleWishlistToggle}
                 >
                     {isWishlisted ? '❤️' : '🤍'}
-                </Button>
+                </button>
             </div>
 
-            <Card.Body className="product-card-body">
+            <div className="product-content">
                 <Link to={`/product/${product.id}`} className="text-decoration-none">
-                    <Card.Title as="div" className="product-title">
-                        <strong>{product.name}</strong>
-                    </Card.Title>
+                    <h3 className="product-title">{product.name}</h3>
                 </Link>
 
                 <div className="product-rating">
@@ -92,42 +88,35 @@ function Product({ product }) {
                     <span className="rating-text">({rating.toFixed(1)})</span>
                 </div>
 
-                <Card.Text as="div" className="product-price-container">
-                    <span className="product-price">
-                        {new Intl.NumberFormat("en-IN", {
-                            style: "currency",
-                            currency: "INR",
-                        }).format(product.price || 0)}
-                    </span>
-                </Card.Text>
+                <div className="product-price">
+                    {new Intl.NumberFormat("en-IN", {
+                        style: "currency",
+                        currency: "INR",
+                    }).format(product.price || 0)}
+                </div>
 
                 <div className="stock-status">
                     {isInStock ? (
-                        <Badge bg="success" className="stock-status-badge in-stock">
-                            ✓ In Stock
-                        </Badge>
+                        <span className="stock-badge in-stock">✓ In Stock</span>
                     ) : (
-                        <Badge bg="secondary" className="stock-status-badge out-of-stock">
-                            ✗ Out of Stock
-                        </Badge>
+                        <span className="stock-badge out-of-stock">✗ Out of Stock</span>
                     )}
                 </div>
 
                 <div className="product-actions">
-                    <Link to={`/product/${product.id}`} className="btn btn-outline-primary btn-view-details">
+                    <Link to={`/product/${product.id}`} className="btn-view-details">
                         View Details
                     </Link>
-                    <Button 
-                        variant="primary" 
-                        className="btn-add-to-cart"
+                    <button 
+                        className={`btn-add-to-cart ${!isInStock ? 'disabled' : ''}`}
                         disabled={!isInStock}
                         onClick={handleAddToCart}
                     >
                         {isInStock ? 'Add to Cart' : 'Out of Stock'}
-                    </Button>
+                    </button>
                 </div>
-            </Card.Body>
-        </Card>
+            </div>
+        </div>
     );
 }
 

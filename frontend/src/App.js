@@ -24,46 +24,48 @@ import ClothingPage from './pages/ClothingPage';
 import DecorPage from './pages/DecorPage';
 import CartPage from './pages/CartPage'
 import CartCheckoutPage from './pages/CartCheckoutPage';
-import Wishlist from './components/Wishlist'; // ADD THIS IMPORT
+import Wishlist from './components/Wishlist';
+import ModernHero from './components/ModernHero'; // ADD THIS IMPORT
 import 'bootstrap/dist/css/bootstrap.min.css';
 import './styles/custom.css';
 import './styles/product.css';
-import './styles/wishlist.css'; // ADD THIS LINE
+import './styles/wishlist.css';
+import './styles/ModernHero.css'; // ADD THIS IMPORT
 
 const App = () => {
   return (
     <div>
       <Router>
         <NavBar />
-        <div className="container mt-4">
-          <Switch>
-            <Route path="/" component={ProductListPage} exact />
-            <Route path="/new-product/" component={ProductCreatePage} exact />
-            <Route path="/product/:id/" component={ProductDetailsPage} exact />
-            <Route path="/product-update/:id/" component={ProductUpdatePage} exact />
-            <Route path="/payment-status" component={PaymentStatus} exact />
-            <Route path="/login" component={Login} exact />
-            <Route path="/register" component={Register} exact />
-            <Route path="/account" component={AccountPage} exact />
-            <Route path="/account/update/" component={AccountUpdatePage} exact />
-            <Route path="/account/delete/" component={DeleteUserAccountPage} exact />
-            <Route path="/stripe-card-details" component={CardDetailsPage} exact />
-            <Route path="/stripe-card-update" component={CardUpdatePage} exact />
-            <Route path="/all-addresses/:id/" component={AddressUpdatePage} exact />
-            <Route path="/all-orders/" component={OrdersListPage} exact />
-            <Route path="/about" component={AboutPage} exact />
-            <Route path="/contact" component={ContactUs} exact />
-            <Route path="/electronics" component={ElectronicsPage} exact />
-            <Route path="/clothing" component={ClothingPage} exact />
-            <Route path="/decor" component={DecorPage} exact />
-            <Route path="/cart" component={CartPage} exact />
-            <Route path="/checkout" component={CheckoutPage} exact />
-            <Route path="/cartcheckout" component={CartCheckoutPage} exact />
-            <Route path="/checkout/product/:id" component={CheckoutPage} exact />
-            <Route path="/wishlist" component={Wishlist} exact /> {/* ADD THIS ROUTE */}
-            <Route path="" component={NotFound} exact />
-          </Switch>
-        </div>
+        {/* Remove container mt-4 for full-width hero */}
+        <Switch>
+          <Route path="/" component={ModernHero} exact /> {/* CHANGE THIS */}
+          <Route path="/products" component={ProductListPage} exact /> {/* ADD THIS */}
+          <Route path="/new-product/" component={ProductCreatePage} exact />
+          <Route path="/product/:id/" component={ProductDetailsPage} exact />
+          <Route path="/product-update/:id/" component={ProductUpdatePage} exact />
+          <Route path="/payment-status" component={PaymentStatus} exact />
+          <Route path="/login" component={Login} exact />
+          <Route path="/register" component={Register} exact />
+          <Route path="/account" component={AccountPage} exact />
+          <Route path="/account/update/" component={AccountUpdatePage} exact />
+          <Route path="/account/delete/" component={DeleteUserAccountPage} exact />
+          <Route path="/stripe-card-details" component={CardDetailsPage} exact />
+          <Route path="/stripe-card-update" component={CardUpdatePage} exact />
+          <Route path="/all-addresses/:id/" component={AddressUpdatePage} exact />
+          <Route path="/all-orders/" component={OrdersListPage} exact />
+          <Route path="/about" component={AboutPage} exact />
+          <Route path="/contact" component={ContactUs} exact />
+          <Route path="/electronics" component={ElectronicsPage} exact />
+          <Route path="/clothing" component={ClothingPage} exact />
+          <Route path="/decor" component={DecorPage} exact />
+          <Route path="/cart" component={CartPage} exact />
+          <Route path="/checkout" component={CheckoutPage} exact />
+          <Route path="/cartcheckout" component={CartCheckoutPage} exact />
+          <Route path="/checkout/product/:id" component={CheckoutPage} exact />
+          <Route path="/wishlist" component={Wishlist} exact />
+          <Route path="" component={NotFound} exact />
+        </Switch>
       </Router>
     </div >
   )
