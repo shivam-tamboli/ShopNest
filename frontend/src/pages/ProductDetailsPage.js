@@ -9,15 +9,6 @@ import {
     getCart
 } from "../actions/cartActions";
 import Message from "../components/Message";
-import {
-    Spinner,
-    Row,
-    Col,
-    Container,
-    Card,
-    Button,
-    Modal,
-} from "react-bootstrap";
 import { Link } from "react-router-dom";
 import {
     CREATE_PRODUCT_RESET,
@@ -25,6 +16,7 @@ import {
     UPDATE_PRODUCT_RESET,
     CARD_CREATE_RESET,
 } from "../constants";
+import "../styles/product-details.css";
 
 function ProductDetailsPage({ history, match }) {
     const dispatch = useDispatch();
@@ -50,12 +42,14 @@ function ProductDetailsPage({ history, match }) {
     );
     const { success: productDeletionSuccess } = deleteProductReducer;
 
-    // Use the consolidated cart reducer instead of cartAddReducer
+    // cart reducer
     const cartReducer = useSelector((state) => state.cartReducer);
     const { loading: cartLoading } = cartReducer;
 
     // Local state to show success message
     const [showCartSuccess, setShowCartSuccess] = useState(false);
+    const [selectedImage, setSelectedImage] = useState(0);
+    const [quantity, setQuantity] = useState(1);
 
     useEffect(() => {
         dispatch(getProductDetails(match.params.id));
@@ -87,7 +81,7 @@ function ProductDetailsPage({ history, match }) {
 
         try {
             setShowCartSuccess(false);
-            await dispatch(addToCart(product.id));
+            await dispatch(addToCart(product.id, quantity));
             setShowCartSuccess(true);
             dispatch(getCart());
         } catch (error) {
@@ -105,132 +99,207 @@ function ProductDetailsPage({ history, match }) {
         }
     }, [productDeletionSuccess, history, dispatch]);
 
-    return (
-        <div>
-            {/* Delete Confirmation Modal */}
-            <Modal show={show} onHide={handleClose} centered>
-                <Modal.Header closeButton>
-                    <Modal.Title>
-                        <i
-                            className="fas fa-exclamation-triangle"
-                            style={{ color: "red" }}
-                        ></i>{" "}
-                        Delete Product
-                    </Modal.Title>
-                </Modal.Header>
-                <Modal.Body>
-                    Are you sure you want to delete{" "}
-                    <strong>{product?.name || "this product"}</strong>?
-                </Modal.Body>
-                <Modal.Footer>
-                    <Button variant="danger" onClick={confirmDelete}>
-                        Confirm Delete
-                    </Button>
-                    <Button variant="secondary" onClick={handleClose}>
-                        Cancel
-                    </Button>
-                </Modal.Footer>
-            </Modal>
+    // Mock images for gallery (you can replace with actual product.images)
+    const productImages = product?.images || [product?.image];
 
-            {/* Loading / Error / Product */}
+    return (
+        <div className="product-details-container">
+            {/* Delete Confirmation Modal */}
+            <div className={`modal-overlay ${show ? 'active' : ''}`}>
+                <div className="modal-container glassmorphism">
+                    <div className="modal-header">
+                        <h3>
+                            <i className="fas fa-exclamation-triangle" style={{ color: "red" }}></i> 
+                            Delete Product
+                        </h3>
+                        <button className="close-btn" onClick={handleClose}>×</button>
+                    </div>
+                    <div className="modal-body">
+                        Are you sure you want to delete <strong>{product?.name || "this product"}</strong>?
+                    </div>
+                    <div className="modal-footer">
+                        <button className="btn-danger" onClick={confirmDelete}>
+                            Confirm Delete
+                        </button>
+                        <button className="btn-secondary" onClick={handleClose}>
+                            Cancel
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            {/* REMOVED BREADCRUMB NAVIGATION */}
+
+            {/* Loading / Error States */}
             {loading && (
-                <div className="d-flex justify-content-center align-items-center my-5">
-                    <Spinner animation="border" variant="primary" className="mr-2" />
+                <div className="loading-spinner">
+                    <div className="spinner"></div>
                     <span>Loading product details...</span>
                 </div>
             )}
 
-            {error && <Message variant="danger">{error}</Message>}
+            {error && <div className="error-message">{error}</div>}
 
             {product && (
-                <Container className="my-4">
-                    <Row className="shadow-lg p-3 rounded bg-white">
-                        {/* Product Image - REMOVED BADGES */}
-                        <Col md={5} className="mb-3">
-                            <Card className="shadow-sm border-0">
-                                <Card.Img
-                                    variant="top"
-                                    src={product.image}
-                                    alt={product.name}
-                                    style={{ height: "420px", objectFit: "cover" }}
-                                />
-                            </Card>
-
-                            {/* Admin buttons */}
-                            {userInfo?.admin && (
-                                <div className="d-flex mt-3">
-                                    <Button
-                                        variant="danger"
-                                        className="w-50 mr-2"
-                                        onClick={handleShow}
+                <div className="product-details-grid">
+                    {/* Product Images Gallery */}
+                    <div className="product-images-section">
+                        <div className="main-image-container">
+                            <img 
+                                src={productImages[selectedImage]} 
+                                alt={product.name}
+                                className="main-product-image"
+                            />
+                            {/* Wishlist button can be added here */}
+                            {/* <button className="wishlist-btn">♥</button> */}
+                        </div>
+                        
+                        {/* Image Thumbnails */}
+                        {productImages.length > 1 && (
+                            <div className="image-thumbnails">
+                                {productImages.map((image, index) => (
+                                    <button
+                                        key={index}
+                                        className={`thumbnail ${selectedImage === index ? 'active' : ''}`}
+                                        onClick={() => setSelectedImage(index)}
                                     >
-                                        Delete
-                                    </Button>
-                                    <Button
-                                        variant="primary"
-                                        className="w-50"
-                                        onClick={() =>
-                                            history.push(`/product-update/${product.id}/`)
-                                        }
-                                    >
-                                        Edit
-                                    </Button>
-                                </div>
-                            )}
-                        </Col>
-
-                        {/* Product Details */}
-                        <Col md={4} className="mb-3">
-                            <h3 className="fw-bold">{product.name}</h3>
-                            
-                            {/* REMOVED BADGES SECTION FROM DETAILS PAGE */}
-                            
-                            <hr />
-                            <p className="text-muted">{product.description}</p>
-                            <div
-                                className="p-2 rounded text-center"
-                                style={{
-                                    border: "1px solid #C6ACE7",
-                                    fontSize: "1.1rem",
-                                    fontWeight: "bold",
-                                }}
-                            >
-                                Price: <span className="text-success">₹ {product.price}</span>
+                                        <img src={image} alt={`${product.name} view ${index + 1}`} />
+                                    </button>
+                                ))}
                             </div>
-                        </Col>
+                        )}
 
-                        {/* Buy Section */}
-                        <Col md={3} className="text-center">
-                            <h4 className="fw-bold">Buy</h4>
-                            <hr />
-                            {product.stock === true || product.stock === 'true' ? (
-                                <>
-                                    <Button
-                                        variant="primary"
-                                        className="w-100 py-2 mb-2"
-                                        onClick={handleAddToCart}
-                                        disabled={cartLoading}
-                                    >
-                                        {cartLoading ? 'Adding...' : '🛒 Add to Cart'}
-                                    </Button>
-                                    <Link to="/cart">
-                                        <Button variant="outline-primary" className="w-100 py-2 mb-2">
-                                            View Cart
-                                        </Button>
-                                    </Link>
-                                    <Link to={`/checkout/product/${product.id}`}>
-                                        <Button variant="success" className="w-100 py-2">
-                                            💳 Buy Now
-                                        </Button>
-                                    </Link>
-                                </>
-                            ) : (
-                                <Message variant="danger">Out of Stock!</Message>
-                            )}
-                        </Col>
-                    </Row>
-                </Container>
+                        {/* Admin buttons */}
+                        {userInfo?.admin && (
+                            <div className="admin-actions">
+                                <button className="btn-danger" onClick={handleShow}>
+                                    Delete Product
+                                </button>
+                                <button 
+                                    className="btn-primary"
+                                    onClick={() => history.push(`/product-update/${product.id}/`)}
+                                >
+                                    Edit Product
+                                </button>
+                            </div>
+                        )}
+                    </div>
+
+                    {/* Product Information */}
+                    <div className="product-info-section">
+                        <div className="product-info-card">
+                            <h1 className="product-title">{product.name}</h1>
+                            
+                            {/* Product Rating - You can add actual rating data */}
+                            <div className="product-rating">
+                                <div className="stars">
+                                    {'★'.repeat(4)}{'☆'.repeat(1)}
+                                </div>
+                                <span className="rating-text">(24 reviews)</span>
+                            </div>
+                            
+                            <div className="product-price">
+                                <span className="current-price">₹ {product.price}</span>
+                                {/* You can add original price and discount if available */}
+                                {/* <span className="original-price">₹ 1999</span>
+                                <span className="discount-badge">-20%</span> */}
+                            </div>
+
+                            <div className="product-description">
+                                <p>{product.description}</p>
+                            </div>
+
+                            {/* Stock Status */}
+                            <div className="stock-status">
+                                <span className={`stock ${product.stock === true || product.stock === 'true' ? 'in-stock' : 'out-of-stock'}`}>
+                                    {product.stock === true || product.stock === 'true' ? '✓ In Stock' : '✗ Out of Stock'}
+                                </span>
+                            </div>
+
+                            {/* Quantity Selector */}
+                            <div className="quantity-selector">
+                                <label>Quantity:</label>
+                                <div className="quantity-controls">
+                                    <button onClick={() => setQuantity(Math.max(1, quantity - 1))}>-</button>
+                                    <span>{quantity}</span>
+                                    <button onClick={() => setQuantity(quantity + 1)}>+</button>
+                                </div>
+                            </div>
+
+                            {/* Action Buttons */}
+                            <div className="action-buttons">
+                                {product.stock === true || product.stock === 'true' ? (
+                                    <>
+                                        <button 
+                                            className="add-to-cart-btn gradient-btn"
+                                            onClick={handleAddToCart}
+                                            disabled={cartLoading}
+                                        >
+                                            {cartLoading ? 'Adding...' : '🛒 Add to Cart'}
+                                        </button>
+                                        <Link to="/cart">
+                                            <button className="view-cart-btn glassmorphism-btn">
+                                                View Cart
+                                            </button>
+                                        </Link>
+                                        <Link to={`/checkout/product/${product.id}`}>
+                                            <button className="buy-now-btn gradient-btn">
+                                                💳 Buy Now
+                                            </button>
+                                        </Link>
+                                    </>
+                                ) : (
+                                    <div className="out-of-stock-message">
+                                        Out of Stock!
+                                    </div>
+                                )}
+                            </div>
+
+                            {/* Product Meta */}
+                            <div className="product-meta">
+                                <div className="meta-item">
+                                    <span className="meta-label">SKU:</span>
+                                    <span>{product.id}</span>
+                                </div>
+                                <div className="meta-item">
+                                    <span className="meta-label">Category:</span>
+                                    <span>{product.category || 'General'}</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
             )}
+
+            {/* Product Tabs Section */}
+            {product && (
+                <div className="product-tabs-section">
+                    <div className="tabs-container">
+                        <div className="tabs-header">
+                            <button className="tab active">Description</button>
+                            <button className="tab">Specifications</button>
+                            <button className="tab">Reviews (24)</button>
+                            <button className="tab">Shipping & Returns</button>
+                        </div>
+                        
+                        <div className="tab-content">
+                            <div className="tab-panel active">
+                                <h3>Product Description</h3>
+                                <p>{product.fullDescription || product.description}</p>
+                                {/* Add more detailed description here */}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            )}
+
+            {/* Related Products Section - Placeholder */}
+            <div className="related-products-section">
+                <h2 className="section-title">You May Also Like</h2>
+                <div className="related-products-placeholder">
+                    <p>Related products section coming soon...</p>
+                </div>
+            </div>
         </div>
     );
 }

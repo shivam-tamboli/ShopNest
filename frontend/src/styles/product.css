@@ -1,3 +1,5 @@
+/* src/styles/product.css */
+
 /* Modern Glassmorphism Product Card */
 .modern-product-card {
   background: rgba(255, 255, 255, 0.8);
@@ -53,6 +55,7 @@
   font-weight: 700;
   text-transform: uppercase;
   letter-spacing: 0.5px;
+  color: white !important; /* Ensure badge text is visible */
 }
 
 .new-badge {
@@ -107,17 +110,20 @@
   height: calc(100% - 250px);
 }
 
+/* FIXED: Product Title - Removed gradient background */
 .product-title {
   font-size: 1.1rem;
   font-weight: 700;
-  color: #2d3748;
+  color: #2d3748 !important; /* Force dark color */
   margin-bottom: 0.75rem;
   line-height: 1.4;
   transition: color 0.3s ease;
+  background: none !important; /* Remove any gradient background */
+  -webkit-text-fill-color: #2d3748 !important; /* Override gradient text */
 }
 
 .product-title:hover {
-  color: #667eea;
+  color: #667eea !important;
 }
 
 /* Product Rating */
@@ -131,6 +137,7 @@
 .stars {
   font-size: 0.9rem;
   letter-spacing: -1px;
+  color: #ffd700; /* Gold color for stars */
 }
 
 .rating-text {
@@ -143,12 +150,10 @@
 .product-price {
   font-size: 1.4rem;
   font-weight: 800;
-  color: #27ae60;
+  color: #27ae60 !important; /* Force green color */
   margin-bottom: 0.75rem;
-  background: linear-gradient(135deg, #27ae60, #2ecc71);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
+  background: none !important; /* Remove gradient background */
+  -webkit-text-fill-color: #27ae60 !important; /* Override gradient text */
 }
 
 /* Stock Status */
@@ -162,6 +167,7 @@
   font-size: 0.75rem;
   font-weight: 600;
   display: inline-block;
+  color: white !important; /* Ensure stock badge text is visible */
 }
 
 .in-stock {
@@ -222,6 +228,7 @@
   background: #a0aec0;
   cursor: not-allowed;
   transform: none;
+  color: white;
 }
 
 /* Responsive Design */
@@ -240,5 +247,9 @@
   
   .product-price {
     font-size: 1.3rem;
+  }
+  
+  .product-title {
+    font-size: 1rem;
   }
 }
