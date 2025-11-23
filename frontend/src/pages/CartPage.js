@@ -1,11 +1,12 @@
 import React, { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { Link, useHistory } from 'react-router-dom';
-import { Container, Row, Col, Card, Button, Image, Spinner, Modal } from 'react-bootstrap';
+import { Container, Row, Col, Spinner } from 'react-bootstrap';
 import Message from '../components/Message';
 import { getCart, removeFromCart, updateCartItem } from '../actions/cartActions';
+import '../styles/cart.css';
 
-// Custom Tooltip Component to replace OverlayTrigger
+// Custom Tooltip Component
 const CustomTooltip = ({ text, children, placement = 'top' }) => {
     const [show, setShow] = useState(false);
 
@@ -13,38 +14,13 @@ const CustomTooltip = ({ text, children, placement = 'top' }) => {
         <div
             onMouseEnter={() => setShow(true)}
             onMouseLeave={() => setShow(false)}
-            style={{ position: 'relative', display: 'inline-block' }}
+            className="tooltip-container"
         >
             {children}
             {show && (
-                <div style={{
-                    position: 'absolute',
-                    bottom: placement === 'top' ? '100%' : 'auto',
-                    top: placement === 'bottom' ? '100%' : 'auto',
-                    left: '50%',
-                    transform: 'translateX(-50%)',
-                    backgroundColor: 'rgba(0, 0, 0, 0.8)',
-                    color: 'white',
-                    padding: '5px 10px',
-                    borderRadius: '4px',
-                    fontSize: '14px',
-                    whiteSpace: 'nowrap',
-                    zIndex: 1000,
-                    marginBottom: placement === 'top' ? '5px' : '0',
-                    marginTop: placement === 'bottom' ? '5px' : '0',
-                    pointerEvents: 'none'
-                }}>
+                <div className={`tooltip ${placement}`}>
                     {text}
-                    <div style={{
-                        position: 'absolute',
-                        left: '50%',
-                        transform: 'translateX(-50%)',
-                        border: '5px solid transparent',
-                        [placement === 'top' ? 'top' : 'bottom']: '100%',
-                        borderColor: placement === 'top'
-                            ? 'rgba(0, 0, 0, 0.8) transparent transparent transparent'
-                            : 'transparent transparent rgba(0, 0, 0, 0.8) transparent'
-                    }}></div>
+                    <div className="tooltip-arrow"></div>
                 </div>
             )}
         </div>
@@ -100,153 +76,147 @@ function CartPage() {
         if (newQuantity > 0) {
             dispatch(updateCartItem(productId, newQuantity));
         } else if (newQuantity === 0) {
-            // Remove item if quantity is zero
             handleRemoveFromCart(productId);
         }
     };
 
     const handleImageError = (e) => {
         e.target.onerror = null;
-        e.target.src = '/images/no_preview_image.png'; // fallback image path
+        e.target.src = '/images/no_preview_image.png';
     };
 
     return (
-        <Container className="py-4">
-            <h2 className="mb-4">Shopping Cart</h2>
+        <div className="cart-page-container">
+            <Container className="py-4">
+                <h2 className="page-title">Shopping Cart</h2>
 
-            {loading && (
-                <div className="d-flex justify-content-center align-items-center my-5">
-                    <Spinner animation="border" />
-                    <h5 className="ml-3">Loading cart...</h5>
-                </div>
-            )}
+                {loading && (
+                    <div className="loading-spinner">
+                        <div className="spinner"></div>
+                        <span>Loading cart...</span>
+                    </div>
+                )}
 
-            {error && (
-                <Message variant="danger">
-                    {error}
-                </Message>
-            )}
+                {error && (
+                    <Message variant="danger">
+                        {error}
+                    </Message>
+                )}
 
-            {!loading && !error && (
-                <>
-                    {totalItems === 0 ? (
-                        <div className="text-center py-5">
-                            <h5>Your cart is empty 🛒</h5>
-                            <Link to="/">
-                                <Button variant="primary" className="mt-3">
-                                    Browse Products
-                                </Button>
-                            </Link>
-                        </div>
-                    ) : (
-                        <Row>
-                            <Col md={8}>
-                                {items.map((item) => (
-                                    <Card key={item.product.id} className="mb-3">
-                                        <Card.Body>
-                                            <Row className="align-items-center">
-                                                <Col xs={3}>
-                                                    <Image
-                                                        src={item.product.image}
-                                                        alt={item.product.name}
-                                                        fluid
-                                                        rounded
-                                                        onError={handleImageError}
-                                                    />
-                                                </Col>
-                                                <Col xs={4}>
-                                                    <h5>{item.product.name}</h5>
-                                                    <p className="text-muted">₹ {parseFloat(item.product.price || 0).toFixed(2)}</p>
-                                                </Col>
-                                                <Col xs={3}>
-                                                    <div className="d-flex align-items-center">
+                {!loading && !error && (
+                    <>
+                        {totalItems === 0 ? (
+                            <div className="empty-cart">
+                                <div className="empty-cart-icon">🛒</div>
+                                <h3>Your cart is empty</h3>
+                                <p>Start shopping to add items to your cart</p>
+                                <Link to="/">
+                                    <button className="browse-products-btn gradient-btn">
+                                        Browse Products
+                                    </button>
+                                </Link>
+                            </div>
+                        ) : (
+                            <Row>
+                                <Col lg={8}>
+                                    <div className="cart-items-section">
+                                        {items.map((item) => (
+                                            <div key={item.product.id} className="cart-item-card glassmorphism">
+                                                <div className="cart-item-content">
+                                                    <div className="item-image">
+                                                        <img
+                                                            src={item.product.image}
+                                                            alt={item.product.name}
+                                                            onError={handleImageError}
+                                                        />
+                                                    </div>
+                                                    <div className="item-details">
+                                                        <h4 className="item-name">{item.product.name}</h4>
+                                                        <p className="item-price">₹ {parseFloat(item.product.price || 0).toFixed(2)}</p>
+                                                    </div>
+                                                    <div className="quantity-controls">
                                                         <CustomTooltip
                                                             text={item.quantity <= 1 ? "Minimum quantity is 1" : "Decrease quantity"}
                                                         >
-                                                            <span>
-                                                                <Button
-                                                                    variant="outline-secondary"
-                                                                    size="sm"
-                                                                    disabled={item.quantity <= 1}
-                                                                    onClick={() => handleQuantityChange(item.product.id, item.quantity - 1)}
-                                                                >
-                                                                    -
-                                                                </Button>
-                                                            </span>
+                                                            <button
+                                                                className="quantity-btn"
+                                                                disabled={item.quantity <= 1}
+                                                                onClick={() => handleQuantityChange(item.product.id, item.quantity - 1)}
+                                                            >
+                                                                −
+                                                            </button>
                                                         </CustomTooltip>
-
-                                                        <span className="mx-2">{item.quantity}</span>
+                                                        <span className="quantity-display">{item.quantity}</span>
                                                         <CustomTooltip text="Increase quantity">
-                                                            <Button
-                                                                variant="outline-secondary"
-                                                                size="sm"
-                                                                onClick={() =>
-                                                                    handleQuantityChange(item.product.id, item.quantity + 1)
-                                                                }
+                                                            <button
+                                                                className="quantity-btn"
+                                                                onClick={() => handleQuantityChange(item.product.id, item.quantity + 1)}
                                                             >
                                                                 +
-                                                            </Button>
+                                                            </button>
                                                         </CustomTooltip>
                                                     </div>
-                                                </Col>
-                                                <Col xs={2}>
-                                                    <CustomTooltip text="Remove item from cart">
-                                                        <Button
-                                                            variant="danger"
-                                                            size="sm"
-                                                            onClick={() => handleRemoveFromCart(item.product.id)}
-                                                        >
-                                                            Remove
-                                                        </Button>
-                                                    </CustomTooltip>
-                                                </Col>
-                                            </Row>
-                                        </Card.Body>
-                                    </Card>
-                                ))}
-                            </Col>
-                            <Col md={4}>
-                                <Card>
-                                    <Card.Body>
-                                        <h4>Cart Summary</h4>
-                                        <hr />
-                                        <div className="d-flex justify-content-between">
+                                                    <div className="item-actions">
+                                                        <CustomTooltip text="Remove item from cart">
+                                                            <button
+                                                                className="remove-btn"
+                                                                onClick={() => handleRemoveFromCart(item.product.id)}
+                                                            >
+                                                                🗑️
+                                                            </button>
+                                                        </CustomTooltip>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        ))}
+                                    </div>
+                                </Col>
+                                <Col lg={4}>
+                                    <div className="cart-summary-card glassmorphism">
+                                        <h3 className="summary-title">Cart Summary</h3>
+                                        <div className="summary-divider"></div>
+                                        <div className="summary-item">
                                             <span>Total Items:</span>
-                                            <span>{totalItems}</span>
+                                            <span className="summary-value">{totalItems}</span>
                                         </div>
-                                        <div className="d-flex justify-content-between">
+                                        <div className="summary-item">
                                             <span>Total Price:</span>
-                                            <span>₹ {totalPrice.toFixed(2)}</span>
+                                            <span className="summary-price">₹ {totalPrice.toFixed(2)}</span>
                                         </div>
                                         <Link to="/cartcheckout">
-                                            <Button variant="success" className="w-100 mt-3">
+                                            <button className="checkout-btn gradient-btn">
                                                 Proceed to Checkout
-                                            </Button>
+                                            </button>
                                         </Link>
-                                    </Card.Body>
-                                </Card>
-                            </Col>
-                        </Row>
-                    )}
-                </>
-            )}
+                                    </div>
+                                </Col>
+                            </Row>
+                        )}
+                    </>
+                )}
 
-            {/* Remove confirmation modal */}
-            <Modal show={showRemoveModal} onHide={cancelRemove} centered>
-                <Modal.Header closeButton>
-                    <Modal.Title>Confirm Remove</Modal.Title>
-                </Modal.Header>
-                <Modal.Body>Are you sure you want to remove this item from your cart?</Modal.Body>
-                <Modal.Footer>
-                    <Button variant="secondary" onClick={cancelRemove}>
-                        Cancel
-                    </Button>
-                    <Button variant="danger" onClick={confirmRemove}>
-                        Remove
-                    </Button>
-                </Modal.Footer>
-            </Modal>
-        </Container>
+                {/* Remove confirmation modal */}
+                <div className={`modal-overlay ${showRemoveModal ? 'active' : ''}`}>
+                    <div className="modal-container glassmorphism">
+                        <div className="modal-header">
+                            <h3>Confirm Remove</h3>
+                            <button className="close-btn" onClick={cancelRemove}>×</button>
+                        </div>
+                        <div className="modal-body">
+                            Are you sure you want to remove this item from your cart?
+                        </div>
+                        <div className="modal-footer">
+                            <button className="btn-secondary" onClick={cancelRemove}>
+                                Cancel
+                            </button>
+                            <button className="btn-danger" onClick={confirmRemove}>
+                                Remove
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </Container>
+        </div>
     );
 }
 
