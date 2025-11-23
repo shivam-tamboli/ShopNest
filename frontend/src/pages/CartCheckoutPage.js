@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react'
 import { Link, useHistory } from 'react-router-dom'
-import { Row, Col, Container, Image, Card, Spinner } from 'react-bootstrap'
+import { Row, Col, Container, Spinner, Image } from 'react-bootstrap'
 import { useDispatch, useSelector } from 'react-redux'
 import CreateCardComponent from '../components/CreateCardComponent'
 import ChargeCardComponent from '../components/ChargeCardComponent'
@@ -12,31 +12,24 @@ import { CHARGE_CARD_RESET } from '../constants/index'
 import { Elements } from '@stripe/react-stripe-js'
 import { loadStripe } from '@stripe/stripe-js'
 import { getCart } from '../actions/cartActions'
+import '../styles/checkout.css';
 
-// Enhanced Stripe initialization with debugging (same as above)
+// Enhanced Stripe initialization with debugging
 let stripePromise = null
 
 const getStripe = () => {
   if (!stripePromise) {
     const publishableKey = process.env.REACT_APP_STRIPE_PUBLISHABLE_KEY
     
-    console.log('🔧 Stripe Debug - Publishable Key:', publishableKey ? 'Present' : 'MISSING')
-    
     if (!publishableKey) {
       console.error('❌ Stripe Publishable Key is missing!')
       return null
     }
 
-    if (!publishableKey.startsWith('pk_test_') && !publishableKey.startsWith('pk_live_')) {
-      console.error('❌ Invalid Stripe Publishable Key format:', publishableKey)
-      return null
-    }
-
     try {
       stripePromise = loadStripe(publishableKey, {
-        betas: [], // Disable any beta features that might cause issues
+        betas: [],
       })
-      console.log('✅ Stripe initialized successfully')
     } catch (error) {
       console.error('❌ Error initializing Stripe:', error)
       return null
@@ -58,7 +51,6 @@ const CartCheckoutPage = () => {
   useEffect(() => {
     const initializeStripe = async () => {
       try {
-        console.log('🔄 Initializing Stripe...')
         const stripeInstance = await getStripe()
         
         if (!stripeInstance) {
@@ -66,9 +58,7 @@ const CartCheckoutPage = () => {
         }
         
         setStripeReady(true)
-        console.log('✅ Stripe is ready!')
       } catch (error) {
-        console.error('❌ Stripe initialization failed:', error)
         setStripeError(error.message)
       }
     }
@@ -102,7 +92,7 @@ const CartCheckoutPage = () => {
       history.push("/login")
     } else {
       dispatch(checkTokenValidation())
-      dispatch(getCart()) // Load cart data
+      dispatch(getCart())
       dispatch(savedCardsList())
       dispatch({ type: CHARGE_CARD_RESET })
     }
@@ -118,168 +108,209 @@ const CartCheckoutPage = () => {
     }
   }, [userInfo, tokenError, dispatch, history])
 
+  const items = cart?.items || []
+  const totalPrice = items.reduce((acc, item) => acc + (parseFloat(item.product.price) * item.quantity), 0)
+  const totalItemsCount = items.reduce((acc, item) => acc + item.quantity, 0)
+
   // Show loading state while Stripe initializes
   if (!stripeReady && !stripeError) {
     return (
-      <Container className="py-4">
-        <div className="d-flex justify-content-center align-items-center my-5">
-          <Spinner animation="border" />
-          <h5 className="ml-3">Initializing payment system...</h5>
-        </div>
-      </Container>
+      <div className="checkout-page-container">
+        <Container className="py-4">
+          <div className="loading-spinner">
+            <div className="spinner"></div>
+            <span>Initializing payment system...</span>
+          </div>
+        </Container>
+      </div>
     )
   }
 
   // Show error state if Stripe failed to load
   if (stripeError) {
     return (
-      <Container className="py-4">
-        <Message variant='danger'>
-          <h4>Payment System Unavailable</h4>
-          <p>{stripeError}</p>
-          <p className="mb-0">
-            Please check your internet connection and try again. 
-            If the problem persists, contact support.
-          </p>
-        </Message>
-      </Container>
+      <div className="checkout-page-container">
+        <Container className="py-4">
+          <Message variant='danger'>
+            <h4>Payment System Unavailable</h4>
+            <p>{stripeError}</p>
+          </Message>
+        </Container>
+      </div>
     )
   }
 
-  const items = cart?.items || []
-  const totalPrice = items.reduce((acc, item) => acc + (parseFloat(item.product.price) * item.quantity), 0)
-
   return (
-    <Container className="py-4">
-      {cardCreationError && <Message variant='danger'>{cardCreationError}</Message>}
+    <div className="checkout-page-container">
+      <Container className="py-4">
+        {cardCreationError && <Message variant='danger'>{cardCreationError}</Message>}
 
-      {loading && (
-        <div className="d-flex justify-content-center align-items-center my-5">
-          <Spinner animation="border" />
-          <h5 className="ml-3">Fetching Checkout Info...</h5>
-        </div>
-      )}
+        {loading && (
+          <div className="loading-spinner">
+            <div className="spinner"></div>
+            <span>Fetching Checkout Info...</span>
+          </div>
+        )}
 
-      {!loading && cardCreationLoading && (
-        <div className="d-flex justify-content-center align-items-center my-5">
-          <Spinner animation="border" />
-          <h5 className="ml-3">Validating Card Details...</h5>
-        </div>
-      )}
+        {!loading && cardCreationLoading && (
+          <div className="loading-spinner">
+            <div className="spinner"></div>
+            <span>Validating Card Details...</span>
+          </div>
+        )}
 
-      {error && <Message variant='danger'>{error}</Message>}
+        {error && <Message variant='danger'>{error}</Message>}
 
-      {cart && (
-        <Row>
-          {/* Checkout Summary */}
-          <Col md={6} className="mb-4">
-            <h3 className="mb-3">Cart Checkout Summary</h3>
+        {cart && items.length > 0 && (
+          <Row>
+            {/* Left Column - Checkout Summary */}
+            <Col lg={6} className="mb-4">
+              <div className="checkout-section">
+                <h1 className="main-title">Cart Checkout Summary</h1>
 
-            {items.map((item, index) => (
-              <Card key={index} className="shadow-sm mb-3">
-                <Card.Body>
-                  <Row className="align-items-center">
-                    <Col xs={5}>
+                {/* Product Items with Images */}
+                {items.map((item, index) => (
+                  <div key={index} className="product-item">
+                    <div className="product-header">
                       {item.product?.image ? (
                         <Image
                           src={item.product.image}
                           alt={item.product?.name || "Product"}
+                          className="product-image"
                           fluid
-                          rounded
-                          className="border"
-                          style={{ height: "100px", objectFit: "cover" }}
                         />
                       ) : (
-                        <div className="border bg-light d-flex justify-content-center align-items-center" style={{ height: "100px", width: "100px" }}>
+                        <div className="product-image-placeholder">
                           <span>No Image</span>
                         </div>
                       )}
-                    </Col>
-                    <Col xs={7}>
-                      <h6 className="text-capitalize">{item.product?.name || "Unnamed Product"}</h6>
-                      <p>Quantity: {item.quantity}</p>
-                      <span className="text-success">₹ {item.product?.price || 0}</span>
-                    </Col>
-                  </Row>
-                </Card.Body>
-              </Card>
-            ))}
+                      <div className="product-info">
+                        <h3 className="product-title">{item.product?.name || "Unnamed Product"}</h3>
+                        <div className="product-details">
+                          <span className="quantity">Quantity: {item.quantity}</span>
+                          <span className="price">¥ {item.product?.price || 0}</span>
+                        </div>
+                      </div>
+                    </div>
+                    <hr className="section-divider" />
+                  </div>
+                ))}
 
-            <Card className="shadow-sm mt-3">
-              <Card.Body>
-                <div className="d-flex justify-content-between align-items-center mb-2">
-                  <h4>Billing Address</h4>
-                  <Link to="/all-addresses/" aria-label="Edit or add billing address">Edit/Add</Link>
+                {/* Address Section */}
+                <div className="address-section">
+                  <div className="section-header">
+                    <h2 className="section-title">Billing Address</h2>
+                    <Link to="/all-addresses/" className="edit-link">Edit/Add</Link>
+                  </div>
+                  <p className="instruction-text">Please select a billing address to proceed with payment.</p>
+                  <UserAddressComponent handleAddressId={handleAddressId} />
                 </div>
-                <UserAddressComponent handleAddressId={handleAddressId} />
-              </Card.Body>
-            </Card>
-          </Col>
+              </div>
+            </Col>
 
-          {/* Payments Section */}
-          <Col md={6}>
-            <h3 className="mb-3">Payments Section</h3>
-            {!addressSelected && (
-              <Message variant='warning' aria-live="polite">
-                Please select a billing address to proceed with payment.
-              </Message>
-            )}
+            {/* Right Column - Payments Section */}
+            <Col lg={6}>
+              <div className="payments-section">
+                <h1 className="main-title">Payments Section</h1>
+                
+                {!addressSelected && (
+                  <div className="warning-message">
+                    <span>⚠️ Please select a billing address to proceed with payment.</span>
+                  </div>
+                )}
 
-            <Card className="shadow-sm mb-3">
-              <Card.Body>
-                <h5>Order Summary</h5>
-                <hr />
-                <div className="d-flex justify-content-between mb-2">
-                  <span>Items ({items.length}):</span>
-                  <span>₹ {totalPrice.toFixed(2)}</span>
+                {/* First Order Summary - Detailed Breakdown */}
+                <div className="order-summary">
+                  <h3 className="summary-title">Order Summary</h3>
+                  <div className="summary-line">
+                    <span>Items ({totalItemsCount}):</span>
+                    <span>¥ {totalPrice.toFixed(2)}</span>
+                  </div>
+                  <div className="summary-line">
+                    <span>Shipping:</span>
+                    <span>¥ 0.00</span>
+                  </div>
+                  <div className="summary-line">
+                    <span>Tax:</span>
+                    <span>¥ 0.00</span>
+                  </div>
+                  <hr className="section-divider" />
+                  <div className="summary-total">
+                    <strong>Total:</strong>
+                    <strong>¥ {totalPrice.toFixed(2)}</strong>
+                  </div>
                 </div>
-                <div className="d-flex justify-content-between mb-2">
-                  <span>Shipping:</span>
-                  <span>₹ 0.00</span>
-                </div>
-                <div className="d-flex justify-content-between mb-2">
-                  <span>Tax:</span>
-                  <span>₹ 0.00</span>
-                </div>
-                <hr />
-                <div className="d-flex justify-content-between mb-3">
-                  <strong>Total:</strong>
-                  <strong>₹ {totalPrice.toFixed(2)}</strong>
-                </div>
-              </Card.Body>
-            </Card>
 
-            <Card className="shadow-sm" aria-disabled={!addressSelected}>
-              <Card.Body>
-                {success ? (
-                  <ChargeCardComponent
-                    selectedAddressId={selectedAddressId}
-                    addressSelected={addressSelected}
-                    checkoutData={{
-                      type: 'cart',
-                      items: items,
-                      total: totalPrice
-                    }}
-                  />
-                ) : (
-                  <Elements stripe={getStripe()}>
-                    <CreateCardComponent
+                {/* Second Order Summary - Itemized List */}
+                <div className="order-summary">
+                  <h3 className="summary-title">Order Summary</h3>
+                  {items.map((item, index) => (
+                    <div key={index} className="summary-line">
+                      <span>{item.quantity} x {item.product?.name || "Unnamed Product"}</span>
+                      <span>¥ {(parseFloat(item.product?.price) * item.quantity).toFixed(2)}</span>
+                    </div>
+                  ))}
+                  <hr className="section-divider" />
+                  <div className="summary-total">
+                    <strong>Total:</strong>
+                    <strong>¥ {totalPrice.toFixed(2)}</strong>
+                  </div>
+                </div>
+
+                {/* Saved Card Section */}
+                <div className="saved-card-section">
+                  <h3 className="section-title">Saved card</h3>
+                  <div className="card-info">
+                    <p className="card-number"><strong>Card Number:</strong> XXXX XXXX XXXX 4242</p>
+                    <div className="card-actions">
+                      <button className="btn btn-outline">Show Card Details</button>
+                      <button className="btn btn-primary">Pay ¥{totalPrice.toFixed(2)}</button>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Payment Component */}
+                <div className={`payment-component ${!addressSelected ? 'disabled' : ''}`}>
+                  {success ? (
+                    <ChargeCardComponent
+                      selectedAddressId={selectedAddressId}
                       addressSelected={addressSelected}
-                      stripeCards={stripeCards || []}
                       checkoutData={{
                         type: 'cart',
                         items: items,
                         total: totalPrice
                       }}
                     />
-                  </Elements>
-                )}
-              </Card.Body>
-            </Card>
-          </Col>
-        </Row>
-      )}
-    </Container>
+                  ) : (
+                    <Elements stripe={getStripe()}>
+                      <CreateCardComponent
+                        addressSelected={addressSelected}
+                        stripeCards={stripeCards || []}
+                        checkoutData={{
+                          type: 'cart',
+                          items: items,
+                          total: totalPrice
+                        }}
+                      />
+                    </Elements>
+                  )}
+                </div>
+              </div>
+            </Col>
+          </Row>
+        )}
+
+        {cart && items.length === 0 && !loading && (
+          <div className="empty-cart-message">
+            <h3>Your cart is empty</h3>
+            <p>Add some products to your cart before checkout.</p>
+            <Link to="/products" className="btn btn-primary">
+              Continue Shopping
+            </Link>
+          </div>
+        )}
+      </Container>
+    </div>
   )
 }
 
