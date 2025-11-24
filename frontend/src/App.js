@@ -25,22 +25,21 @@ import DecorPage from './pages/DecorPage';
 import CartPage from './pages/CartPage'
 import CartCheckoutPage from './pages/CartCheckoutPage';
 import Wishlist from './components/Wishlist';
-import ModernHero from './components/ModernHero'; // ADD THIS IMPORT
+import HomePage from './pages/HomePage'; // ADD THIS IMPORT
 import 'bootstrap/dist/css/bootstrap.min.css';
 import './styles/custom.css';
 import './styles/product.css';
 import './styles/wishlist.css';
-import './styles/ModernHero.css'; // ADD THIS IMPORT
+import './styles/ModernHero.css';
 
 const App = () => {
   return (
     <div>
       <Router>
         <NavBar />
-        {/* Remove container mt-4 for full-width hero */}
         <Switch>
-          <Route path="/" component={ModernHero} exact /> {/* CHANGE THIS */}
-          <Route path="/products" component={ProductListPage} exact /> {/* ADD THIS */}
+          <Route path="/" component={HomePage} exact /> {/* CHANGED TO HomePage */}
+          <Route path="/products" component={ProductListPage} exact />
           <Route path="/new-product/" component={ProductCreatePage} exact />
           <Route path="/product/:id/" component={ProductDetailsPage} exact />
           <Route path="/product-update/:id/" component={ProductUpdatePage} exact />

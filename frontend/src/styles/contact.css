@@ -1,131 +1,197 @@
-.modern-hero {
-  min-height: 80vh;
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: 0 5%;
-  color: white;
-  position: relative;
-  overflow: hidden;
+.contact-page-wrapper {
+  background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+  min-height: 100vh;
 }
 
-.hero-content {
-  max-width: 500px;
-  z-index: 2;
+.contact-page {
+  max-width: 1400px;
 }
 
-.hero-title {
-  font-size: 3.5rem;
-  font-weight: 700;
-  margin-bottom: 1.5rem;
-  line-height: 1.1;
+/* Contact Method Cards */
+.contact-method-card {
+  transition: all 0.3s ease;
+  border-radius: 15px;
 }
 
-.gradient-text {
-  background: linear-gradient(45deg, #f093fb, #f5576c);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
+.contact-method-card:hover {
+  transform: translateY(-8px);
+  box-shadow: 0 15px 30px rgba(0,0,0,0.1) !important;
 }
 
-.hero-subtitle {
-  font-size: 1.2rem;
-  margin-bottom: 2rem;
+.contact-icon-container {
+  font-size: 2.5rem;
   opacity: 0.9;
-  line-height: 1.6;
 }
 
-.hero-buttons {
-  display: flex;
-  gap: 1rem;
+.contact-detail {
+  font-size: 1.1rem;
+  color: #333;
 }
 
-.btn-primary, .btn-secondary {
-  padding: 12px 30px;
-  border: none;
-  border-radius: 50px;
+/* Contact Form */
+.contact-form-card {
+  border-radius: 20px;
+  background: white;
+}
+
+.form-control-lg {
+  border-radius: 10px;
+  border: 2px solid #e9ecef;
+  padding: 1rem 1.5rem;
   font-size: 1rem;
-  font-weight: 600;
-  cursor: pointer;
   transition: all 0.3s ease;
 }
 
-.btn-primary {
-  background: #ff6b6b;
-  color: white;
+.form-control-lg:focus {
+  border-color: #007bff;
+  box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.25);
 }
 
-.btn-primary:hover {
-  background: #ff5252;
+.submit-btn {
+  border-radius: 50px;
+  padding: 1rem 2rem;
+  font-weight: 600;
+  font-size: 1.1rem;
+  border: none;
+  background: linear-gradient(135deg, #007bff, #0056b3);
+  transition: all 0.3s ease;
+}
+
+.submit-btn:hover:not(:disabled) {
   transform: translateY(-2px);
+  box-shadow: 0 8px 20px rgba(0, 123, 255, 0.3);
 }
 
-.btn-secondary {
-  background: transparent;
-  color: white;
-  border: 2px solid white;
+.submit-btn:disabled {
+  opacity: 0.7;
 }
 
-.btn-secondary:hover {
+/* FAQ Section */
+.faq-card {
+  border-radius: 15px;
   background: white;
-  color: #667eea;
 }
 
-.hero-visual {
+.faq-item:last-child {
+  margin-bottom: 0 !important;
+}
+
+.faq-item h6 {
+  font-weight: 600;
+}
+
+/* Social Links */
+.social-card {
+  border-radius: 15px;
+  background: white;
+}
+
+.social-links {
+  display: flex;
+  justify-content: center;
+  gap: 1rem;
+}
+
+.social-link {
+  width: 50px;
+  height: 50px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-decoration: none;
+  font-size: 1.2rem;
+  transition: all 0.3s ease;
+  color: white;
+}
+
+.social-link.whatsapp {
+  background: #25D366;
+}
+
+.social-link.linkedin {
+  background: #0077B5;
+}
+
+.social-link.twitter {
+  background: #1DA1F2;
+}
+
+.social-link.email {
+  background: #007bff;
+}
+
+.social-link:hover {
+  transform: scale(1.1);
+  color: white;
+}
+
+/* Response Card */
+.response-card {
+  border-radius: 15px;
+  background: white;
+  border-left: 4px solid #ffc107 !important;
+}
+
+/* Map Section */
+.map-card {
+  border-radius: 15px;
+  overflow: hidden;
+}
+
+.map-placeholder {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  height: 300px;
   position: relative;
-  width: 400px;
-  height: 400px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: white;
 }
 
-.floating-card {
-  position: absolute;
-  background: rgba(255, 255, 255, 0.1);
-  backdrop-filter: blur(10px);
-  border-radius: 20px;
-  padding: 20px;
-  font-size: 2rem;
-  animation: float 3s ease-in-out infinite;
+.map-overlay {
+  z-index: 2;
 }
 
-.card-1 {
-  top: 20%;
-  left: 10%;
-  animation-delay: 0s;
+/* Alert Styling */
+.alert {
+  border-radius: 10px;
+  border: none;
+  font-weight: 500;
 }
 
-.card-2 {
-  top: 50%;
-  right: 20%;
-  animation-delay: 1s;
-}
-
-.card-3 {
-  bottom: 20%;
-  left: 30%;
-  animation-delay: 2s;
-}
-
-@keyframes float {
-  0%, 100% { transform: translateY(0px); }
-  50% { transform: translateY(-20px); }
+/* Form Labels */
+.form-label {
+  font-weight: 600;
+  color: #333;
+  margin-bottom: 0.5rem;
 }
 
 /* Responsive Design */
 @media (max-width: 768px) {
-  .modern-hero {
-    flex-direction: column;
-    text-align: center;
-    padding: 2rem;
+  .contact-page {
+    padding: 2rem 1rem;
   }
   
-  .hero-title {
+  .display-4 {
     font-size: 2.5rem;
   }
   
-  .hero-visual {
-    width: 300px;
-    height: 300px;
-    margin-top: 2rem;
+  .contact-method-card {
+    margin-bottom: 1.5rem;
+  }
+  
+  .social-links {
+    gap: 0.5rem;
+  }
+  
+  .social-link {
+    width: 45px;
+    height: 45px;
+    font-size: 1.1rem;
+  }
+  
+  .form-control-lg {
+    padding: 0.875rem 1.25rem;
   }
 }

@@ -1,28 +1,248 @@
+.about-page-wrapper {
+  background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+  min-height: 100vh;
+}
+
 .about-page {
-  max-width: 900px;
+  max-width: 1200px;
   margin: auto;
 }
 
-.about-page h1 {
-  font-size: 2.75rem;
+/* Hero Section */
+.hero-section {
+  padding: 3rem 0;
 }
 
-.about-page .lead {
-  font-size: 1.15rem;
+.brand-highlight {
+  color: #0056b3;
+  font-weight: 800;
 }
 
-.mission h2,
-.team h2,
-.contact-us h2 {
-  margin-top: 2rem;
-  margin-bottom: 1rem;
+.hero-features {
+  margin-top: 1.5rem;
 }
 
-.team img {
-  border: 3px solid #dee2e6;
+.feature-tag {
+  background: #007bff;
+  color: white;
+  padding: 0.5rem 1rem;
+  border-radius: 25px;
+  margin-right: 0.5rem;
+  font-size: 0.9rem;
+  font-weight: 600;
 }
 
-.team h5 {
-  font-weight: bold;
+.hero-image-container {
+  position: relative;
+}
+
+.hero-image {
+  transition: transform 0.3s ease;
+}
+
+.hero-image:hover {
+  transform: scale(1.02);
+}
+
+/* Stats Section */
+.stats-section {
+  background: white;
+  border-radius: 15px;
+  box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+}
+
+.stat-item {
+  padding: 1rem;
+}
+
+.stat-number {
+  font-size: 2.5rem;
+  font-weight: 800;
+  color: #007bff;
   margin-bottom: 0.5rem;
+}
+
+.stat-label {
+  font-size: 1rem;
+  color: #6c757d;
+  font-weight: 600;
+}
+
+/* Mission & Vision Cards */
+.mission-card, .vision-card {
+  border: none;
+  border-radius: 15px;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.mission-card:hover, .vision-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 10px 25px rgba(0,0,0,0.15) !important;
+}
+
+.mission-icon, .vision-icon {
+  opacity: 0.9;
+}
+
+/* Values Section */
+.section-title {
+  font-size: 2.5rem;
+  font-weight: 700;
+  color: #333;
+  position: relative;
+}
+
+.section-title::after {
+  content: '';
+  position: absolute;
+  bottom: -10px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 80px;
+  height: 4px;
+  background: linear-gradient(45deg, #007bff, #0056b3);
+  border-radius: 2px;
+}
+
+.value-card {
+  background: white;
+  border-radius: 15px;
+  transition: all 0.3s ease;
+  padding: 1.5rem;
+}
+
+.value-card:hover {
+  transform: translateY(-8px);
+  box-shadow: 0 15px 30px rgba(0,0,0,0.1);
+}
+
+.value-icon-container {
+  background: linear-gradient(135deg, #007bff, #0056b3);
+  width: 80px;
+  height: 80px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0 auto;
+}
+
+.value-icon {
+  font-size: 2rem;
+  color: white;
+}
+
+/* Features Section */
+.feature-item {
+  padding: 2rem 1rem;
+  background: white;
+  border-radius: 15px;
+  box-shadow: 0 5px 15px rgba(0,0,0,0.08);
+  transition: transform 0.3s ease;
+  height: 100%;
+}
+
+.feature-item:hover {
+  transform: translateY(-5px);
+}
+
+.feature-icon {
+  opacity: 0.9;
+}
+
+/* Team Section */
+.team-card {
+  border: none;
+  border-radius: 15px;
+  overflow: hidden;
+  transition: transform 0.3s ease;
+}
+
+.team-card:hover {
+  transform: translateY(-8px);
+}
+
+.team-image-container {
+  width: 150px;
+  height: 150px;
+  margin: 2rem auto 1rem;
+  border-radius: 50%;
+  overflow: hidden;
+  border: 4px solid #007bff;
+}
+
+.team-image {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+/* CTA Section */
+.cta-section {
+  background: linear-gradient(135deg, #007bff 0%, #0056b3 100%);
+  color: white;
+  border-radius: 20px;
+  margin: 3rem 0;
+}
+
+.cta-button {
+  background: white;
+  color: #007bff;
+  border: none;
+  padding: 1rem 2rem;
+  font-weight: 700;
+  border-radius: 50px;
+  transition: all 0.3s ease;
+}
+
+.cta-button:hover {
+  background: #f8f9fa;
+  transform: scale(1.05);
+  color: #0056b3;
+}
+
+/* Contact Section */
+.contact-section {
+  padding: 3rem 0;
+}
+
+.contact-options {
+  margin-top: 2rem;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .hero-section {
+    text-align: center;
+    padding: 2rem 0;
+  }
+  
+  .feature-tag {
+    display: block;
+    margin: 0.5rem auto;
+    width: fit-content;
+  }
+  
+  .stat-number {
+    font-size: 2rem;
+  }
+  
+  .section-title {
+    font-size: 2rem;
+  }
+  
+  .team-image-container {
+    width: 120px;
+    height: 120px;
+  }
+}
+
+/* Animation Classes */
+.fade-in {
+  animation: fadeIn 0.8s ease-in;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(30px); }
+  to { opacity: 1; transform: translateY(0); }
 }
